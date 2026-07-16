@@ -6,9 +6,9 @@ passive discovery rather than assignments, grades, quizzes, or visible mastery.
 
 The Build Week vertical slice follows a synthetic student across English 10, World
 History, Biology, and Algebra II. Her current feed moves between *The Great Gatsby*,
-the Cuban Missile Crisis, cell division, and exponential growth. It mixes original
-human editorial posts with AI-planned posts, preserves course-specific provenance, and
-enforces each class's learning boundary independently. A demo classroom control
+the Cuban Missile Crisis, cell division, and exponential growth. It mixes rendered
+Backstory videos with curated YouTube creator embeds, preserves course-specific
+provenance, and enforces each class's learning boundary independently. A demo classroom control
 advances Gatsby to Chapter 6 and visibly refreshes the feed without displacing the
 other classes.
 
@@ -18,6 +18,7 @@ Requirements:
 
 - Node.js 22 or newer
 - npm 10 or newer
+- FFmpeg and FFprobe when regenerating demo videos
 
 ```bash
 npm install
@@ -32,6 +33,9 @@ The app works without an API key using the deterministic content-plan fixture. T
 the live structured planner, set `OPENAI_API_KEY` in `.env` and restart the server. The
 planner uses `gpt-5.6` through the Responses API and rejects output that crosses the
 completed chapter boundary.
+
+Creator posts stream from YouTube through its privacy-enhanced embed player and need a
+network connection. Backstory does not download or re-host YouTube media.
 
 ## Judge Demo
 
@@ -68,6 +72,8 @@ Important paths:
 - `server/ranking.ts`: spoiler eligibility, passive signals, and diversity ordering
 - `server/content-planner.ts`: server-side GPT-5.6 Responses API integration
 - `shared/contracts.ts`: client/server Zod schemas
+- `video/`: deterministic Remotion compositions for Backstory-owned posts
+- `scripts/render-demo-videos.ts`: offline MP4 and poster publishing step
 - `e2e/`: mobile and desktop Playwright flows
 - `docs/`: product brief and durable decision log
 
@@ -82,11 +88,24 @@ npm run lint
 npm test
 npm run test:e2e
 npm run build
+npm run video:verify
 ```
 
 The browser suite validates 320x568 and 390x844 mobile viewports plus 1440x1000 desktop,
 full-height posts, multi-course diversity, course-specific provenance, paging, and the
 Chapter 6 LMS transition.
+
+To edit or regenerate the project-owned vertical videos:
+
+```bash
+npm run video:studio
+npm run video:render
+npm run video:verify
+```
+
+The checked-in demo videos are silent H.264 720x1280 MP4s with WebVTT text tracks.
+Narration and music are intentionally deferred until their disclosure, licensing, and
+mixing behavior are implemented end to end.
 
 ## Production Build
 

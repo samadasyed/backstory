@@ -84,12 +84,34 @@ export const postSequenceSchema = z.object({
 
 export const sourceRefSchema = z.object({
   id: z.string(),
-  kind: z.enum(["lms-resource", "creator-original", "public-domain", "model-output"]),
+  kind: z.enum(["lms-resource", "creator-original", "public-domain", "model-output", "youtube-video"]),
   title: z.string(),
   creator: z.string().nullable(),
   locator: z.string().nullable(),
-  rights: z.enum(["owned", "permission", "public-domain", "school-provided"])
+  rights: z.enum(["owned", "permission", "public-domain", "school-provided", "platform-embed"])
 });
+
+const renderedVideoMediaSchema = z.object({
+  kind: z.literal("rendered-video"),
+  src: z.string().startsWith("/"),
+  poster: z.string().startsWith("/"),
+  captions: z.string().startsWith("/").nullable(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  hasAudio: z.boolean()
+});
+
+const youtubeMediaSchema = z.object({
+  kind: z.literal("youtube"),
+  videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
+  canonicalUrl: z.string().url(),
+  channelName: z.string(),
+  channelUrl: z.string().url(),
+  title: z.string(),
+  posterUrl: z.string().url()
+});
+
+export const postMediaSchema = z.discriminatedUnion("kind", [renderedVideoMediaSchema, youtubeMediaSchema]);
 
 export const postFormatSchema = z.enum([
   "cinematic",
@@ -116,6 +138,7 @@ export const feedPostSchema = z.object({
   eyebrow: z.string(),
   headline: z.string(),
   caption: z.string(),
+  media: postMediaSchema.optional(),
   visual: z.object({
     imageUrl: z.string().nullable(),
     alt: z.string(),

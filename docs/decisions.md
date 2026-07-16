@@ -128,3 +128,20 @@ different kinds of course progression and make one coherent consumer feed from t
 learning sequence. The Great Gatsby Chapter 6 transition remains the primary scripted
 LMS demo, while the other course signals stay stable and remain visible after that
 transition.
+
+## 2026-07-16: Hybrid Video Feed
+
+**Decision:** Backstory-owned AI and editorial posts use pre-rendered vertical MP4
+assets generated from deterministic Remotion compositions. Curated human creator
+posts use the official YouTube privacy-enhanced embed player.
+
+**Rationale:** Pre-rendered video gives the primary feed instant, repeatable motion and
+keeps factual diagrams, captions, and spoiler boundaries inspectable. Official embeds
+let creator videos retain their native attribution, controls, availability rules, and
+platform provenance without copying third-party media.
+
+**Consequence:** Video generation is an offline publishing step, never a feed-load
+request. YouTube media is identified per post, is never downloaded or cached, and may
+become unavailable when a creator or YouTube changes its status. Backstory controls
+remain outside the YouTube player. Dynamic creator discovery and audio generation
+remain future publishing-pipeline work.

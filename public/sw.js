@@ -5,7 +5,9 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  const isLargeMedia = event.request.destination === "video" || event.request.headers.has("range");
+  if (event.request.method !== "GET" || url.origin !== self.location.origin || isLargeMedia) return;
   event.respondWith(
     fetch(event.request)
       .then((response) => {

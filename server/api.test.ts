@@ -20,12 +20,26 @@ describe("Backstory API", () => {
     expect(feed.items.length).toBeGreaterThanOrEqual(14);
     expect(feed.items.some((item) => item.post.origin === "human")).toBe(true);
     expect(feed.items.some((item) => item.post.origin === "ai")).toBe(true);
+    expect(feed.items.filter((item) => item.post.media?.kind === "rendered-video")).toHaveLength(4);
+    expect(feed.items.filter((item) => item.post.media?.kind === "youtube")).toHaveLength(4);
+    expect(
+      feed.items
+        .filter((item) => item.post.media?.kind === "youtube")
+        .every((item) => item.post.sources.some((source) => source.rights === "platform-embed"))
+    ).toBe(true);
     expect(new Set(feed.items.slice(0, 6).map((item) => item.post.courseId)).size).toBe(4);
     expect(
       feed.items.some(
         (item) => item.post.sequence.scopeId === "work-great-gatsby" && item.post.sequence.requiredThrough === 6
       )
     ).toBe(false);
+  });
+
+  it("rejects malformed YouTube media identifiers", async () => {
+    const response = await request(app).get("/api/feed").expect(200);
+    const youtubeItem = response.body.items.find((item: { post: { media?: { kind?: string } } }) => item.post.media?.kind === "youtube");
+    youtubeItem.post.media.videoId = "https://example.com/not-a-video";
+    expect(feedResponseSchema.safeParse(response.body).success).toBe(false);
   });
 
   it("advances the Canvas-shaped fixture and admits Chapter 6 posts", async () => {

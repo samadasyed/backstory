@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bot, CirclePause, Volume2, VolumeX } from "lucide-react";
 import type { FeedItem, FeedEvent } from "../../shared/contracts";
 import { ActionRail } from "./ActionRail";
-import { PostVisual } from "./PostVisual";
+import { PostMedia } from "./PostMedia";
 
 type PostCardProps = {
   item: FeedItem;
@@ -50,36 +50,44 @@ export function PostCard({
   };
 
   const post = item.post;
+  const isYoutube = post.media?.kind === "youtube";
+  const hasBackstoryAudio = post.media?.kind === "rendered-video" && post.media.hasAudio;
   return (
     <article
-      className={`feed-post tone-${post.visual.tone} course-${post.courseId} ${active ? "is-active" : ""}`}
+      className={`feed-post tone-${post.visual.tone} course-${post.courseId} ${isYoutube ? "is-youtube" : ""} ${active ? "is-active" : ""}`}
       data-post-id={post.id}
       data-course-id={post.courseId}
       style={{ "--accent": post.visual.accent } as React.CSSProperties}
       aria-label={post.headline}
     >
-      <button
-        className="media-toggle"
-        type="button"
-        aria-label={paused ? "Resume animated post" : "Pause animated post"}
-        onClick={() => {
-          setPaused((current) => !current);
-          onEvent("pause");
-        }}
-      >
-        {paused && <CirclePause aria-hidden="true" />}
-      </button>
+      {!isYoutube && (
+        <button
+          className="media-toggle"
+          type="button"
+          aria-label={paused ? "Resume post" : "Pause post"}
+          onClick={() => {
+            setPaused((current) => !current);
+            onEvent("pause");
+          }}
+        >
+          {paused && <CirclePause aria-hidden="true" />}
+        </button>
+      )}
 
       <div className={paused ? "visual-paused" : ""}>
-        <PostVisual post={post} active={active && !paused} />
+        <PostMedia post={post} active={active} paused={paused} muted={muted} />
       </div>
 
-      <div className="post-top-meta">
-        <span>{post.eyebrow}</span>
-        <button type="button" className="sound-button" onClick={onToggleMute} aria-label={muted ? "Turn sound on" : "Mute sound"}>
-          {muted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
-        </button>
-      </div>
+      {!isYoutube && (
+        <div className="post-top-meta">
+          <span>{post.eyebrow}</span>
+          {hasBackstoryAudio && (
+            <button type="button" className="sound-button" onClick={onToggleMute} aria-label={muted ? "Turn sound on" : "Mute sound"}>
+              {muted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+            </button>
+          )}
+        </div>
+      )}
 
       <ActionRail
         creatorInitials={post.creator.initials}

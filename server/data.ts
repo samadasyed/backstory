@@ -123,6 +123,41 @@ export const modelSource: SourceRef = {
   rights: "owned"
 };
 
+const youtubeSources = {
+  gatsby: {
+    id: "youtube-schooling-online-gatsby-4-5",
+    kind: "youtube-video",
+    title: "The Great Gatsby Plot Summary - Chapters 4-5",
+    creator: "Schooling Online",
+    locator: "https://www.youtube.com/watch?v=UoSmKJjt-m4",
+    rights: "platform-embed"
+  },
+  history: {
+    id: "youtube-ted-ed-cuban-missile-crisis",
+    kind: "youtube-video",
+    title: "The history of the Cuban Missile Crisis",
+    creator: "TED-Ed",
+    locator: "https://www.youtube.com/watch?v=bwWW3sbk4EU",
+    rights: "platform-embed"
+  },
+  biology: {
+    id: "youtube-amoeba-sisters-mitosis",
+    kind: "youtube-video",
+    title: "Mitosis: The Amazing Cell Process that Uses Division to Multiply!",
+    creator: "Amoeba Sisters",
+    locator: "https://www.youtube.com/watch?v=f-ldPgEfAHI",
+    rights: "platform-embed"
+  },
+  algebra: {
+    id: "youtube-khan-academy-exponential-growth",
+    kind: "youtube-video",
+    title: "Exponential growth functions",
+    creator: "Khan Academy",
+    locator: "https://www.youtube.com/watch?v=6WMZ7J0wwMI",
+    rights: "platform-embed"
+  }
+} satisfies Record<string, SourceRef>;
+
 export function createLearningItem(state: DemoState): LearningItem {
   return {
     id: "reading-gatsby-current",
@@ -286,12 +321,21 @@ export const feedPosts: FeedPost[] = [
     eyebrow: "THE RECEIPTS",
     headline: "Gatsby's rumor resume is doing a lot",
     caption: "Oxford. Family money. War medals. World travel. Chapter 4 gives Gatsby a polished origin story and just enough proof to keep Nick listening.",
+    media: {
+      kind: "rendered-video",
+      src: "/assets/videos/gatsby-rumor-resume.mp4",
+      poster: "/assets/videos/gatsby-rumor-resume-poster.webp",
+      captions: "/assets/videos/gatsby-rumor-resume.vtt",
+      width: 720,
+      height: 1280,
+      hasAudio: false
+    },
     visual: {
       imageUrl: "/assets/gatsby-party.webp",
       alt: "A solitary man watches a lavish 1920s mansion party from the lawn.",
       accent: "#e8ff57",
       tone: "dark",
-      beats: ["Oxford?", "Inherited fortune?", "War hero?", "He brought receipts.", "Fact, performance, or both?"]
+      beats: ["Oxford", "Inherited fortune", "War hero", "He brought receipts", "The story stays polished and uncertain"]
     },
     conceptTags: ["mystery", "character-drama", "social-performance"],
     sequence: { scopeId: "work-great-gatsby", kind: "chapter", requiredThrough: 4, revealsThrough: 4 },
@@ -426,12 +470,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: "reading-gatsby-current",
     contextLabel: "English · Gatsby Ch. 5",
     origin: "human",
-    creator: { name: "Nia · Backstory Editorial", handle: "@niaexplains", initials: "NE" },
+    creator: { name: "Schooling Online", handle: "@SchoolingOnline", initials: "SO" },
     format: "cinematic",
     durationSeconds: 30,
     eyebrow: "CREATOR TAKE",
-    headline: "This house tour is a flex and a plea",
-    caption: "The rooms, the view, even the shirts are evidence: look what I made, look what I can offer, look at me differently.",
+    headline: "Chapters 4 and 5 put Gatsby's story under pressure",
+    caption: "Schooling Online traces the guest list, Gatsby's life story, and the reunion your class has reached.",
+    media: {
+      kind: "youtube",
+      videoId: "UoSmKJjt-m4",
+      canonicalUrl: "https://www.youtube.com/watch?v=UoSmKJjt-m4",
+      channelName: "Schooling Online",
+      channelUrl: "https://www.youtube.com/@SchoolingOnline",
+      title: "The Great Gatsby Plot Summary - Chapters 4-5 - Schooling Online",
+      posterUrl: "https://i.ytimg.com/vi/UoSmKJjt-m4/hqdefault.jpg"
+    },
     visual: {
       imageUrl: "/assets/gatsby-party.webp",
       alt: "The illuminated facade of a grand 1920s mansion.",
@@ -445,7 +498,7 @@ export const feedPosts: FeedPost[] = [
       ...commonWhy,
       reason: "Your class just reached Gatsby's mansion tour, where objects reveal more than dialogue."
     },
-    sources: [novelSource, canvasSource, editorialSource],
+    sources: [novelSource, canvasSource, youtubeSources.gatsby],
     publishedAt: "2026-07-16T14:10:00.000Z"
   },
   {
@@ -574,6 +627,15 @@ export const feedPosts: FeedPost[] = [
     eyebrow: "THE RED PHONE MYTH",
     headline: "The famous hotline did not save the world in 1962",
     caption: "Washington and Moscow created a direct written link after the Cuban Missile Crisis exposed how dangerously slow official messages could be.",
+    media: {
+      kind: "rendered-video",
+      src: "/assets/videos/history-hotline-myth.mp4",
+      poster: "/assets/videos/history-hotline-myth-poster.webp",
+      captions: "/assets/videos/history-hotline-myth.vtt",
+      width: 720,
+      height: 1280,
+      hasAudio: false
+    },
     visual: {
       imageUrl: null,
       alt: "An editorial timeline showing delayed messages followed by a direct communications link.",
@@ -597,12 +659,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: historyLearningItem.id,
     contextLabel: "History · Cuban Missile Crisis",
     origin: "human",
-    creator: { name: "Malik · Culture Desk", handle: "@malikmaps", initials: "MM" },
+    creator: { name: "TED-Ed", handle: "@TEDEd", initials: "TE" },
     format: "split-explainer",
     durationSeconds: 29,
     eyebrow: "THIRTEEN DAYS",
-    headline: "Every decision was racing two different clocks",
-    caption: "Public pressure rewarded toughness. Private diplomacy needed time. The crisis became a contest between escalation and room to negotiate.",
+    headline: "Thirteen days that brought the world close to nuclear war",
+    caption: "TED-Ed reconstructs the decisions, misunderstandings, and private diplomacy behind the Cuban Missile Crisis.",
+    media: {
+      kind: "youtube",
+      videoId: "bwWW3sbk4EU",
+      canonicalUrl: "https://www.youtube.com/watch?v=bwWW3sbk4EU",
+      channelName: "TED-Ed",
+      channelUrl: "https://www.youtube.com/@TEDEd",
+      title: "The history of the Cuban Missile Crisis - Matthew A. Jordan",
+      posterUrl: "https://i.ytimg.com/vi/bwWW3sbk4EU/hqdefault.jpg"
+    },
     visual: {
       imageUrl: null,
       alt: "A split editorial comparison of military escalation and private diplomacy.",
@@ -617,7 +688,7 @@ export const feedPosts: FeedPost[] = [
       safetyLabel: "Matches Lesson 4 · Cuban Missile Crisis",
       reason: "Your class is comparing military pressure with the quieter negotiations happening at the same time."
     },
-    sources: [historyCanvasSource, historySource, editorialSource],
+    sources: [historyCanvasSource, historySource, youtubeSources.history],
     publishedAt: "2026-07-16T14:22:00.000Z"
   },
   {
@@ -632,6 +703,15 @@ export const feedPosts: FeedPost[] = [
     eyebrow: "CELL SECURITY",
     headline: "Cells use checkpoints before they commit to dividing",
     caption: "A cell does not simply hit copy and hope. Checkpoints can pause the cycle when conditions or DNA are not ready for the next phase.",
+    media: {
+      kind: "rendered-video",
+      src: "/assets/videos/biology-cell-checkpoints.mp4",
+      poster: "/assets/videos/biology-cell-checkpoints-poster.webp",
+      captions: "/assets/videos/biology-cell-checkpoints.vtt",
+      width: 720,
+      height: 1280,
+      hasAudio: false
+    },
     visual: {
       imageUrl: null,
       alt: "A stylized cell-cycle checkpoint sequence with chromosomes and pause signals.",
@@ -655,12 +735,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: biologyLearningItem.id,
     contextLabel: "Biology · Mitosis",
     origin: "human",
-    creator: { name: "Maya · Lab Notes", handle: "@mayacells", initials: "MC" },
+    creator: { name: "Amoeba Sisters", handle: "@AmoebaSisters", initials: "AS" },
     format: "split-explainer",
     durationSeconds: 27,
     eyebrow: "MICRO CHOREOGRAPHY",
-    headline: "Mitosis is organized movement, not a cellular explosion",
-    caption: "Copied chromosomes line up, separate, and move toward opposite sides so the new cells can receive matching sets.",
+    headline: "Mitosis uses division to multiply",
+    caption: "Amoeba Sisters follows chromosomes through the cell cycle and the organized stages of mitosis.",
+    media: {
+      kind: "youtube",
+      videoId: "f-ldPgEfAHI",
+      canonicalUrl: "https://www.youtube.com/watch?v=f-ldPgEfAHI",
+      channelName: "Amoeba Sisters",
+      channelUrl: "https://www.youtube.com/@AmoebaSisters",
+      title: "Mitosis: The Amazing Cell Process that Uses Division to Multiply! (Updated)",
+      posterUrl: "https://i.ytimg.com/vi/f-ldPgEfAHI/hqdefault.jpg"
+    },
     visual: {
       imageUrl: null,
       alt: "A clean comparison of chromosomes lining up and moving apart during mitosis.",
@@ -675,7 +764,7 @@ export const feedPosts: FeedPost[] = [
       safetyLabel: "Matches Lesson 3 · Mitosis",
       reason: "Your current module focuses on what chromosomes are physically doing during cell division."
     },
-    sources: [biologyCanvasSource, biologySource, editorialSource],
+    sources: [biologyCanvasSource, biologySource, youtubeSources.biology],
     publishedAt: "2026-07-16T14:26:00.000Z"
   },
   {
@@ -690,6 +779,15 @@ export const feedPosts: FeedPost[] = [
     eyebrow: "DOUBLING GETS WEIRD",
     headline: "A paper-thin number can become astronomical fast",
     caption: "In a theoretical model, doubling 0.1 millimeters forty-two times passes the average Earth-to-Moon distance. Exponential growth stays quiet, then stops looking reasonable.",
+    media: {
+      kind: "rendered-video",
+      src: "/assets/videos/algebra-paper-to-moon.mp4",
+      poster: "/assets/videos/algebra-paper-to-moon-poster.webp",
+      captions: "/assets/videos/algebra-paper-to-moon.vtt",
+      width: 720,
+      height: 1280,
+      hasAudio: false
+    },
     visual: {
       imageUrl: null,
       alt: "A geometric stack doubles from a thin sheet into an astronomical height.",
@@ -713,12 +811,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: algebraLearningItem.id,
     contextLabel: "Algebra II · Growth patterns",
     origin: "human",
-    creator: { name: "Jules · Backstory Editorial", handle: "@julesgraphs", initials: "JG" },
+    creator: { name: "Khan Academy", handle: "@khanacademy", initials: "KA" },
     format: "split-explainer",
     durationSeconds: 20,
     eyebrow: "TWO KINDS OF CHANGE",
-    headline: "One pattern adds. The other keeps multiplying.",
-    caption: "Linear change wins early surprisingly often. Exponential change is built for the comeback.",
+    headline: "A growth factor changes the shape of the whole function",
+    caption: "Khan Academy builds an exponential growth function and shows how repeated multiplication appears in its graph.",
+    media: {
+      kind: "youtube",
+      videoId: "6WMZ7J0wwMI",
+      canonicalUrl: "https://www.youtube.com/watch?v=6WMZ7J0wwMI",
+      channelName: "Khan Academy",
+      channelUrl: "https://www.youtube.com/@khanacademy",
+      title: "Exponential growth functions | Algebra II | Khan Academy",
+      posterUrl: "https://i.ytimg.com/vi/6WMZ7J0wwMI/hqdefault.jpg"
+    },
     visual: {
       imageUrl: null,
       alt: "A comparison of a steady linear pattern and a sharply rising exponential pattern.",
@@ -733,7 +840,7 @@ export const feedPosts: FeedPost[] = [
       safetyLabel: "Matches Lesson 2 · Growth and Decay",
       reason: "Your current lesson is about recognizing when a pattern adds and when it multiplies."
     },
-    sources: [algebraCanvasSource, editorialSource],
+    sources: [algebraCanvasSource, youtubeSources.algebra],
     publishedAt: "2026-07-16T14:30:00.000Z"
   }
 ];

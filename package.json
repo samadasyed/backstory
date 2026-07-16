@@ -13,7 +13,10 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "video:studio": "remotion studio video/index.ts",
+    "video:render": "tsx scripts/render-demo-videos.ts",
+    "video:verify": "tsx scripts/verify-demo-videos.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -28,6 +31,9 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@playwright/test": "^1.61.1",
+    "@remotion/bundler": "4.0.490",
+    "@remotion/cli": "4.0.490",
+    "@remotion/renderer": "4.0.490",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/cors": "^2.8.19",
@@ -43,6 +49,7 @@
     "eslint-plugin-react-refresh": "^0.5.0",
     "globals": "^16.5.0",
     "jsdom": "^27.4.0",
+    "remotion": "4.0.490",
     "supertest": "^7.2.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

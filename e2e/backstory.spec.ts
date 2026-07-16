@@ -9,7 +9,11 @@ test("renders a full-viewport feed with inspectable provenance", async ({ page }
   await expect(page.getByRole("region", { name: "Backstory feed" })).toBeVisible();
   const firstPost = page.locator(".feed-post").first();
   await expect(firstPost).toBeVisible();
-  await expect(firstPost.locator("img")).toBeVisible();
+  const openingMedia = firstPost.locator("video, iframe");
+  await expect(openingMedia).toBeVisible();
+  if ((await openingMedia.evaluate((element) => element.tagName)) === "VIDEO") {
+    await expect.poll(async () => openingMedia.evaluate((video: HTMLVideoElement) => video.paused)).toBe(false);
+  }
   await expect(page.locator(".poll-options")).toHaveCount(0);
 
   const dimensions = await page.evaluate(() => ({
@@ -33,6 +37,15 @@ test("renders a full-viewport feed with inspectable provenance", async ({ page }
   await expect(page.getByText("The Great Gatsby", { exact: true })).toBeVisible();
   await page.waitForTimeout(300);
   await page.screenshot({ path: testInfo.outputPath("provenance.png"), fullPage: false });
+});
+
+test("keeps YouTube creator media in its official attributed player", async ({ page }) => {
+  await page.goto("/");
+  const youtubePost = page.locator(".feed-post.is-youtube").first();
+  await youtubePost.scrollIntoViewIfNeeded();
+  await expect(youtubePost.locator("iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\//);
+  await expect(youtubePost.getByText(/^YouTube · /)).toBeVisible();
+  await expect(youtubePost.getByRole("link", { name: /Open .* on YouTube/i })).toBeVisible();
 });
 
 test("pages the feed and adapts when the LMS advances", async ({ page }, testInfo) => {

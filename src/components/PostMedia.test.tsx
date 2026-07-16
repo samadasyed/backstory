@@ -21,14 +21,14 @@ describe("PostMedia", () => {
   it("uses a privacy-enhanced YouTube embed only while active", () => {
     const post = feedPosts.find((candidate) => candidate.id === "biology-chromosome-choreography")!;
     const { rerender } = render(<PostMedia post={post} active={false} paused={false} muted />);
-    expect(screen.queryByTitle(/Mitosis: The Amazing/i)).not.toBeInTheDocument();
+    expect(screen.queryByTitle(/Mitosis: witness/i)).not.toBeInTheDocument();
 
     rerender(<PostMedia post={post} active paused={false} muted />);
-    const player = screen.getByTitle(/Mitosis: The Amazing/i);
-    expect(player).toHaveAttribute("src", expect.stringContaining("youtube-nocookie.com/embed/f-ldPgEfAHI"));
+    const player = screen.getByTitle(/Mitosis: witness/i);
+    expect(player).toHaveAttribute("src", expect.stringContaining("youtube-nocookie.com/embed/PcXKbsDJkvA"));
     expect(screen.getByRole("link", { name: /Open .* on YouTube/i })).toHaveAttribute(
       "href",
-      "https://www.youtube.com/watch?v=f-ldPgEfAHI"
+      "https://www.youtube.com/shorts/PcXKbsDJkvA"
     );
   });
 });

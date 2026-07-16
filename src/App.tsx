@@ -61,7 +61,12 @@ export default function App() {
     if (!node) return;
     const handleScroll = () => {
       const height = node.clientHeight;
-      if (height > 0) setActiveIndex(Math.round(node.scrollTop / height));
+      if (height > 0) {
+        const position = node.scrollTop / height;
+        const nearestIndex = Math.round(position);
+        const visibleShare = 1 - Math.abs(position - nearestIndex);
+        setActiveIndex(visibleShare >= 0.6 ? nearestIndex : -1);
+      }
     };
     node.addEventListener("scroll", handleScroll, { passive: true });
     return () => node.removeEventListener("scroll", handleScroll);

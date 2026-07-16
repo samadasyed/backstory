@@ -145,3 +145,20 @@ request. YouTube media is identified per post, is never downloaded or cached, an
 become unavailable when a creator or YouTube changes its status. Backstory controls
 remain outside the YouTube player. Dynamic creator discovery and audio generation
 remain future publishing-pipeline work.
+
+## 2026-07-16: Vertical Creator Shorts And Alternating Origins
+
+**Decision:** Human video fixtures use native vertical YouTube Shorts rather than
+embedded long-form videos. The default feed starts with an AI-made video and
+alternates AI and human origins while both pools have eligible candidates.
+
+**Rationale:** Creator media should feel intentionally selected for a short-form phone
+feed, not inserted from a desktop video catalog. Explicit origin scheduling makes the
+mixed-media product legible immediately instead of relying on small ranking-score
+differences to produce a balanced sequence.
+
+**Consequence:** Backstory does not download, crop, or recut YouTube media without
+creator permission. It selects already-short vertical sources and preserves the
+official player. Ranking scores still choose the strongest candidate within each
+origin slot, video media receives a small presentation-fit boost, and course diversity
+remains a best-effort constraint inside the alternating sequence.

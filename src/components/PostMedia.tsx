@@ -74,7 +74,7 @@ export function PostMedia({ post, active, paused, muted }: PostMediaProps) {
 
   if (media.kind === "youtube") {
     return (
-      <div className="post-media youtube-media">
+      <div className={`post-media youtube-media youtube-${media.presentation}`}>
         {active ? (
           <YoutubePlayer media={media} />
         ) : (

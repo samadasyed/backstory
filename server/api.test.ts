@@ -22,6 +22,8 @@ describe("Backstory API", () => {
     expect(feed.items.some((item) => item.post.origin === "ai")).toBe(true);
     expect(feed.items.filter((item) => item.post.media?.kind === "rendered-video")).toHaveLength(4);
     expect(feed.items.filter((item) => item.post.media?.kind === "youtube")).toHaveLength(4);
+    expect(feed.items.slice(0, 4).map((item) => item.post.origin)).toEqual(["ai", "human", "ai", "human"]);
+    expect(feed.items.slice(0, 4).every((item) => item.post.media !== undefined)).toBe(true);
     expect(
       feed.items
         .filter((item) => item.post.media?.kind === "youtube")

@@ -103,6 +103,7 @@ const renderedVideoMediaSchema = z.object({
 
 const youtubeMediaSchema = z.object({
   kind: z.literal("youtube"),
+  presentation: z.literal("short"),
   videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
   canonicalUrl: z.string().url(),
   channelName: z.string(),

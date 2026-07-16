@@ -78,16 +78,32 @@ describe("passive ranking", () => {
     expect(rankingState.preferences.get(`${post.courseId}:${post.conceptTags[0]!}`)).toBe(0.35);
   });
 
-  it("keeps courses and origins mixed in the opening feed", () => {
+  it("opens with four courses and alternates AI and human video", () => {
     const ranked = rankPosts(
       feedPosts,
       createLearningContext({ completedThrough: 5, assignedThrough: 5 }),
       createRankingState()
     );
-    const origins = new Set(ranked.slice(0, 5).map((item) => item.post.origin));
-    const courseIds = new Set(ranked.slice(0, 6).map((item) => item.post.courseId));
-    expect(origins.has("human")).toBe(true);
-    expect(origins.has("ai")).toBe(true);
+    const opening = ranked.slice(0, 4);
+    const courseIds = new Set(opening.map((item) => item.post.courseId));
+    expect(opening.map((item) => item.post.origin)).toEqual(["ai", "human", "ai", "human"]);
+    expect(opening.map((item) => item.post.media?.kind)).toEqual([
+      "rendered-video",
+      "youtube",
+      "rendered-video",
+      "youtube"
+    ]);
     expect(courseIds.size).toBe(4);
+  });
+
+  it("keeps alternating while both origin pools have candidates", () => {
+    const ranked = rankPosts(
+      feedPosts,
+      createLearningContext({ completedThrough: 5, assignedThrough: 5 }),
+      createRankingState()
+    );
+    for (let index = 1; index < ranked.length; index += 1) {
+      expect(ranked[index]?.post.origin).not.toBe(ranked[index - 1]?.post.origin);
+    }
   });
 });

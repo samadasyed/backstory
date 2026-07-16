@@ -125,35 +125,35 @@ export const modelSource: SourceRef = {
 
 const youtubeSources = {
   gatsby: {
-    id: "youtube-schooling-online-gatsby-4-5",
+    id: "youtube-quizlet-gatsby-green-light",
     kind: "youtube-video",
-    title: "The Great Gatsby Plot Summary - Chapters 4-5",
-    creator: "Schooling Online",
-    locator: "https://www.youtube.com/watch?v=UoSmKJjt-m4",
+    title: "What Gatsby's Green Light Really Means",
+    creator: "Quizlet",
+    locator: "https://www.youtube.com/shorts/5Ae0OgiH7L0",
     rights: "platform-embed"
   },
   history: {
-    id: "youtube-ted-ed-cuban-missile-crisis",
+    id: "youtube-extra-history-cuban-missile-crisis",
     kind: "youtube-video",
-    title: "The history of the Cuban Missile Crisis",
-    creator: "TED-Ed",
-    locator: "https://www.youtube.com/watch?v=bwWW3sbk4EU",
+    title: "The Man Who Stopped WW3 | Cuban Missile Crisis | Cold War History",
+    creator: "Extra History",
+    locator: "https://www.youtube.com/shorts/n1-KVIgqVNk",
     rights: "platform-embed"
   },
   biology: {
-    id: "youtube-amoeba-sisters-mitosis",
+    id: "youtube-voka-mitosis-3d",
     kind: "youtube-video",
-    title: "Mitosis: The Amazing Cell Process that Uses Division to Multiply!",
-    creator: "Amoeba Sisters",
-    locator: "https://www.youtube.com/watch?v=f-ldPgEfAHI",
+    title: "Mitosis: witness the process of cell division in 3D",
+    creator: "VOKA 3D Anatomy & Pathology",
+    locator: "https://www.youtube.com/shorts/PcXKbsDJkvA",
     rights: "platform-embed"
   },
   algebra: {
-    id: "youtube-khan-academy-exponential-growth",
+    id: "youtube-iteachalgebra-exponential-growth",
     kind: "youtube-video",
-    title: "Exponential growth functions",
-    creator: "Khan Academy",
-    locator: "https://www.youtube.com/watch?v=6WMZ7J0wwMI",
+    title: "Exponential growth and decay formulas",
+    creator: "iteachalgebra",
+    locator: "https://www.youtube.com/shorts/wqSwqP8FEMk",
     rights: "platform-embed"
   }
 } satisfies Record<string, SourceRef>;
@@ -470,20 +470,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: "reading-gatsby-current",
     contextLabel: "English · Gatsby Ch. 5",
     origin: "human",
-    creator: { name: "Schooling Online", handle: "@SchoolingOnline", initials: "SO" },
+    creator: { name: "Quizlet", handle: "@quizlet", initials: "QZ" },
     format: "cinematic",
-    durationSeconds: 30,
+    durationSeconds: 62,
     eyebrow: "CREATOR TAKE",
-    headline: "Chapters 4 and 5 put Gatsby's story under pressure",
-    caption: "Schooling Online traces the guest list, Gatsby's life story, and the reunion your class has reached.",
+    headline: "The green light carries more than one kind of distance",
+    caption: "Quizlet connects Gatsby's view across the water to longing, ambition, and the future he keeps imagining.",
     media: {
       kind: "youtube",
-      videoId: "UoSmKJjt-m4",
-      canonicalUrl: "https://www.youtube.com/watch?v=UoSmKJjt-m4",
-      channelName: "Schooling Online",
-      channelUrl: "https://www.youtube.com/@SchoolingOnline",
-      title: "The Great Gatsby Plot Summary - Chapters 4-5 - Schooling Online",
-      posterUrl: "https://i.ytimg.com/vi/UoSmKJjt-m4/hqdefault.jpg"
+      presentation: "short",
+      videoId: "5Ae0OgiH7L0",
+      canonicalUrl: "https://www.youtube.com/shorts/5Ae0OgiH7L0",
+      channelName: "Quizlet",
+      channelUrl: "https://www.youtube.com/@quizlet",
+      title: "What Gatsby's Green Light Really Means #GreatGatsby #Shorts",
+      posterUrl: "https://i.ytimg.com/vi/5Ae0OgiH7L0/hq2.jpg"
     },
     visual: {
       imageUrl: "/assets/gatsby-party.webp",
@@ -496,7 +497,7 @@ export const feedPosts: FeedPost[] = [
     sequence: { scopeId: "work-great-gatsby", kind: "chapter", requiredThrough: 5, revealsThrough: 5 },
     why: {
       ...commonWhy,
-      reason: "Your class just reached Gatsby's mansion tour, where objects reveal more than dialogue."
+      reason: "Chapter 5 returns to the green light after Gatsby and Daisy reunite, changing the symbol's immediate context."
     },
     sources: [novelSource, canvasSource, youtubeSources.gatsby],
     publishedAt: "2026-07-16T14:10:00.000Z"
@@ -659,20 +660,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: historyLearningItem.id,
     contextLabel: "History · Cuban Missile Crisis",
     origin: "human",
-    creator: { name: "TED-Ed", handle: "@TEDEd", initials: "TE" },
+    creator: { name: "Extra History", handle: "@extrahistory", initials: "EH" },
     format: "split-explainer",
-    durationSeconds: 29,
+    durationSeconds: 60,
     eyebrow: "THIRTEEN DAYS",
-    headline: "Thirteen days that brought the world close to nuclear war",
-    caption: "TED-Ed reconstructs the decisions, misunderstandings, and private diplomacy behind the Cuban Missile Crisis.",
+    headline: "One submarine officer helped stop the crisis from escalating",
+    caption: "Extra History tells the story of Vasili Arkhipov and a decision made beneath the surface during the Cuban Missile Crisis.",
     media: {
       kind: "youtube",
-      videoId: "bwWW3sbk4EU",
-      canonicalUrl: "https://www.youtube.com/watch?v=bwWW3sbk4EU",
-      channelName: "TED-Ed",
-      channelUrl: "https://www.youtube.com/@TEDEd",
-      title: "The history of the Cuban Missile Crisis - Matthew A. Jordan",
-      posterUrl: "https://i.ytimg.com/vi/bwWW3sbk4EU/hqdefault.jpg"
+      presentation: "short",
+      videoId: "n1-KVIgqVNk",
+      canonicalUrl: "https://www.youtube.com/shorts/n1-KVIgqVNk",
+      channelName: "Extra History",
+      channelUrl: "https://www.youtube.com/@extrahistory",
+      title: "The Man Who Stopped WW3 | Cuban Missile Crisis | Cold War History",
+      posterUrl: "https://i.ytimg.com/vi/n1-KVIgqVNk/hq2.jpg"
     },
     visual: {
       imageUrl: null,
@@ -735,20 +737,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: biologyLearningItem.id,
     contextLabel: "Biology · Mitosis",
     origin: "human",
-    creator: { name: "Amoeba Sisters", handle: "@AmoebaSisters", initials: "AS" },
+    creator: { name: "VOKA 3D Anatomy & Pathology", handle: "@vokaio", initials: "V3" },
     format: "split-explainer",
-    durationSeconds: 27,
+    durationSeconds: 33,
     eyebrow: "MICRO CHOREOGRAPHY",
-    headline: "Mitosis uses division to multiply",
-    caption: "Amoeba Sisters follows chromosomes through the cell cycle and the organized stages of mitosis.",
+    headline: "Cell division becomes choreography in 3D",
+    caption: "VOKA's anatomical animation makes the chromosome movement of mitosis visible from start to finish.",
     media: {
       kind: "youtube",
-      videoId: "f-ldPgEfAHI",
-      canonicalUrl: "https://www.youtube.com/watch?v=f-ldPgEfAHI",
-      channelName: "Amoeba Sisters",
-      channelUrl: "https://www.youtube.com/@AmoebaSisters",
-      title: "Mitosis: The Amazing Cell Process that Uses Division to Multiply! (Updated)",
-      posterUrl: "https://i.ytimg.com/vi/f-ldPgEfAHI/hqdefault.jpg"
+      presentation: "short",
+      videoId: "PcXKbsDJkvA",
+      canonicalUrl: "https://www.youtube.com/shorts/PcXKbsDJkvA",
+      channelName: "VOKA 3D Anatomy & Pathology",
+      channelUrl: "https://www.youtube.com/@vokaio",
+      title: "Mitosis: witness the process of cell division in 3D with VOKA 3D Anatomy & Pathology",
+      posterUrl: "https://i.ytimg.com/vi/PcXKbsDJkvA/hq2.jpg"
     },
     visual: {
       imageUrl: null,
@@ -811,20 +814,21 @@ export const feedPosts: FeedPost[] = [
     learningItemId: algebraLearningItem.id,
     contextLabel: "Algebra II · Growth patterns",
     origin: "human",
-    creator: { name: "Khan Academy", handle: "@khanacademy", initials: "KA" },
+    creator: { name: "iteachalgebra", handle: "@iteachalgebra", initials: "IA" },
     format: "split-explainer",
-    durationSeconds: 20,
+    durationSeconds: 60,
     eyebrow: "TWO KINDS OF CHANGE",
-    headline: "A growth factor changes the shape of the whole function",
-    caption: "Khan Academy builds an exponential growth function and shows how repeated multiplication appears in its graph.",
+    headline: "Growth and decay share the same exponential structure",
+    caption: "iteachalgebra puts the two formulas side by side and isolates the factor that sends each pattern in a different direction.",
     media: {
       kind: "youtube",
-      videoId: "6WMZ7J0wwMI",
-      canonicalUrl: "https://www.youtube.com/watch?v=6WMZ7J0wwMI",
-      channelName: "Khan Academy",
-      channelUrl: "https://www.youtube.com/@khanacademy",
-      title: "Exponential growth functions | Algebra II | Khan Academy",
-      posterUrl: "https://i.ytimg.com/vi/6WMZ7J0wwMI/hqdefault.jpg"
+      presentation: "short",
+      videoId: "wqSwqP8FEMk",
+      canonicalUrl: "https://www.youtube.com/shorts/wqSwqP8FEMk",
+      channelName: "iteachalgebra",
+      channelUrl: "https://www.youtube.com/@iteachalgebra",
+      title: "Exponential growth and decay formulas #math #iteachalgebra #algebra #mathematics",
+      posterUrl: "https://i.ytimg.com/vi/wqSwqP8FEMk/hq2.jpg"
     },
     visual: {
       imageUrl: null,

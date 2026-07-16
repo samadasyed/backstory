@@ -73,7 +73,8 @@ export function rankPosts(posts: FeedPost[], context: LearningContext, state: Ra
       const contextRelevance = post.sequence.requiredThrough === boundary?.assignedThrough ? 1 : 0.45;
       const editorialQuality = 1 - index / Math.max(posts.length * 2, 1);
       const humanMix = post.origin === "human" ? 0.04 : 0;
-      const score = contextRelevance * 0.48 + editorialQuality * 0.32 + preference * 0.16 + humanMix;
+      const videoFit = post.media ? 0.08 : 0;
+      const score = contextRelevance * 0.48 + editorialQuality * 0.32 + preference * 0.16 + humanMix + videoFit;
 
       return {
         post,
@@ -95,23 +96,32 @@ function diversify(items: FeedItem[]): FeedItem[] {
   while (remaining.length > 0) {
     const lastTwo = result.slice(-2);
     const repeatedFormat = lastTwo.length === 2 && lastTwo.every((item) => item.post.format === lastTwo[0]?.post.format);
-    const repeatedOrigin = lastTwo.length === 2 && lastTwo.every((item) => item.post.origin === lastTwo[0]?.post.origin);
     const repeatedCourse = lastTwo.length === 2 && lastTwo.every((item) => item.post.courseId === lastTwo[0]?.post.courseId);
-    let nextIndex = 0;
+    const previousOrigin = result.at(-1)?.post.origin;
+    const desiredOrigin = previousOrigin === "human" ? "ai" : "human";
+    const targetOrigin = result.length === 0 ? "ai" : desiredOrigin;
+    const originAvailable = remaining.some((item) => item.post.origin === targetOrigin);
+    const matchesOrigin = (item: FeedItem) => !originAvailable || item.post.origin === targetOrigin;
+    let nextIndex = -1;
 
     if (result.length < openingCoverageSize) {
       const seenCourseIds = new Set(result.map((item) => item.post.courseId));
-      const unseenCourse = remaining.findIndex((item) => !seenCourseIds.has(item.post.courseId));
+      const unseenCourse = remaining.findIndex(
+        (item) => matchesOrigin(item) && !seenCourseIds.has(item.post.courseId)
+      );
       if (unseenCourse >= 0) nextIndex = unseenCourse;
-    } else if (repeatedFormat || repeatedOrigin || repeatedCourse) {
+    } else if (repeatedFormat || repeatedCourse) {
       const alternative = remaining.findIndex(
         (item) =>
+          matchesOrigin(item) &&
           (!repeatedFormat || item.post.format !== lastTwo[0]?.post.format) &&
-          (!repeatedOrigin || item.post.origin !== lastTwo[0]?.post.origin) &&
           (!repeatedCourse || item.post.courseId !== lastTwo[0]?.post.courseId)
       );
       if (alternative >= 0) nextIndex = alternative;
     }
+
+    if (nextIndex < 0) nextIndex = remaining.findIndex(matchesOrigin);
+    if (nextIndex < 0) nextIndex = 0;
 
     const [next] = remaining.splice(nextIndex, 1);
     if (next) result.push(next);

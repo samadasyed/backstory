@@ -7,7 +7,7 @@ passive discovery rather than assignments, grades, quizzes, or visible mastery.
 The Build Week vertical slice follows a synthetic student across English 10, World
 History, Biology, and Algebra II. Her current feed moves between *The Great Gatsby*,
 the Cuban Missile Crisis, cell division, and exponential growth. It mixes rendered
-Backstory videos with curated YouTube creator embeds, preserves course-specific
+Backstory videos with curated vertical YouTube Shorts, preserves course-specific
 provenance, and enforces each class's learning boundary independently. A demo classroom control
 advances Gatsby to Chapter 6 and visibly refreshes the feed without displacing the
 other classes.
@@ -40,7 +40,7 @@ network connection. Backstory does not download or re-host YouTube media.
 ## Judge Demo
 
 1. Open the feed at a phone viewport or install it to an iPhone home screen.
-2. Scroll through the mixed English, History, Biology, and Algebra II posts.
+2. Scroll through the AI-first feed as it alternates Backstory videos and human creator Shorts.
 3. Open `Why this?` on different subjects to inspect the matching Canvas reason,
    sources, and learning boundary.
 4. Save or like a post to record a passive preference signal.

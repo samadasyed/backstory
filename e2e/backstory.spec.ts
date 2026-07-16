@@ -33,8 +33,8 @@ test("renders a full-viewport feed with inspectable provenance", async ({ page }
 
   await firstPost.getByRole("button", { name: "Why this?" }).click();
   await expect(page.getByRole("dialog", { name: "Why this backstory?" })).toBeVisible();
-  await expect(page.getByText("Spoiler-safe through Chapter 5", { exact: true })).toBeVisible();
-  await expect(page.getByText("The Great Gatsby", { exact: true })).toBeVisible();
+  await expect(page.getByText("Matches Lesson 4 · Cuban Missile Crisis", { exact: true })).toBeVisible();
+  await expect(page.getByText("Cuban Missile Crisis fact sheet", { exact: true })).toBeVisible();
   await page.waitForTimeout(300);
   await page.screenshot({ path: testInfo.outputPath("provenance.png"), fullPage: false });
 });
@@ -46,12 +46,24 @@ test("keeps YouTube creator media in its official attributed player", async ({ p
   await expect(youtubePost.locator("iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\//);
   await expect(youtubePost.getByText(/^YouTube · /)).toBeVisible();
   await expect(youtubePost.getByRole("link", { name: /Open .* on YouTube/i })).toBeVisible();
+  const geometry = await youtubePost.evaluate((post) => {
+    const player = post.querySelector("iframe")?.getBoundingClientRect();
+    const actions = post.querySelector(".action-rail")?.getBoundingClientRect();
+    const source = post.querySelector(".youtube-source-strip")?.getBoundingClientRect();
+    return {
+      player: player && { width: player.width, height: player.height, right: player.right, bottom: player.bottom },
+      actions: actions && { left: actions.left },
+      source: source && { top: source.top }
+    };
+  });
+  expect((geometry.player?.height ?? 0) / (geometry.player?.width ?? 1)).toBeGreaterThan(1.7);
+  expect(geometry.actions?.left).toBeGreaterThanOrEqual(geometry.player?.right ?? 0);
+  expect(geometry.source?.top).toBeGreaterThanOrEqual(geometry.player?.bottom ?? 0);
 });
 
 test("pages the feed and adapts when the LMS advances", async ({ page }, testInfo) => {
   await page.goto("/");
   const feed = page.locator(".feed");
-  const initialPostId = await page.locator(".feed-post").first().getAttribute("data-post-id");
   await feed.evaluate((node) => node.scrollTo({ top: node.clientHeight, behavior: "auto" }));
   await expect(page.locator(".feed-post").nth(1)).toHaveClass(/is-active/);
 
@@ -65,10 +77,10 @@ test("pages the feed and adapts when the LMS advances", async ({ page }, testInf
   await page.getByRole("button", { name: "Advance class to Chapter 6" }).click();
   const refreshToast = page.getByText("New backstories from Chapter 6");
   await expect(refreshToast).toBeVisible();
-  await expect(page.locator(".feed-post").first()).toHaveAttribute("data-post-id", /gatsby-(invented-self|past-pressure)/);
-  expect(await page.locator(".feed-post").first().getAttribute("data-post-id")).not.toBe(initialPostId);
-  await expect(page.getByText("NEW FROM CHAPTER 6").first()).toBeVisible();
-  await expect.poll(async () => feed.evaluate((node) => node.scrollTop)).toBe(0);
+  const newChapterPost = page.locator('[data-post-id="gatsby-invented-self"]');
+  await expect(newChapterPost).toHaveCount(1);
+  await newChapterPost.scrollIntoViewIfNeeded();
+  await expect(newChapterPost.getByText("NEW FROM CHAPTER 6")).toBeVisible();
   await expect(refreshToast).toBeHidden({ timeout: 4_000 });
   await page.screenshot({ path: testInfo.outputPath("chapter-6.png"), fullPage: false });
 });

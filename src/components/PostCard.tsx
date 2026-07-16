@@ -89,33 +89,37 @@ export function PostCard({
         </div>
       )}
 
-      <ActionRail
-        creatorInitials={post.creator.initials}
-        saved={saved}
-        liked={liked}
-        onSave={handleSave}
-        onLike={handleLike}
-        onShare={onShare}
-        onMore={onMore}
-      />
+      {!isYoutube && (
+        <ActionRail
+          creatorInitials={post.creator.initials}
+          saved={saved}
+          liked={liked}
+          onSave={handleSave}
+          onLike={handleLike}
+          onShare={onShare}
+          onMore={onMore}
+        />
+      )}
 
-      <div className="post-copy">
-        <div className="post-byline">
-          <strong>{post.creator.handle}</strong>
-          {post.origin !== "human" && (
-            <span className="origin-label">
-              <Bot aria-hidden="true" /> AI-made
-            </span>
-          )}
-          {post.origin === "human" && <span className="origin-label">Creator-made</span>}
+      {!isYoutube && (
+        <div className="post-copy">
+          <div className="post-byline">
+            <strong>{post.creator.handle}</strong>
+            {post.origin !== "human" && (
+              <span className="origin-label">
+                <Bot aria-hidden="true" /> AI-made
+              </span>
+            )}
+            {post.origin === "human" && <span className="origin-label">Creator-made</span>}
+          </div>
+          <h2>{post.headline}</h2>
+          <p>{post.caption}</p>
+          <div className="post-context">
+            <span>{post.contextLabel}</span>
+            <button type="button" onClick={onWhy}>Why this?</button>
+          </div>
         </div>
-        <h2>{post.headline}</h2>
-        <p>{post.caption}</p>
-        <div className="post-context">
-          <span>{post.contextLabel}</span>
-          <button type="button" onClick={onWhy}>Why this?</button>
-        </div>
-      </div>
+      )}
     </article>
   );
 }

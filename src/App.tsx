@@ -179,13 +179,12 @@ export default function App() {
       </div>
 
       <section className="phone-stage" aria-label="Backstory feed">
-        <AppHeader
-          onDemo={() => openSheet("demo")}
-          lightBackground={
-            feed.items[activeIndex]?.post.visual.tone === "light" &&
-            feed.items[activeIndex]?.post.media?.kind !== "youtube"
-          }
-        />
+        {activePost.media?.kind !== "youtube" && (
+          <AppHeader
+            onDemo={() => openSheet("demo")}
+            lightBackground={feed.items[activeIndex]?.post.visual.tone === "light"}
+          />
+        )}
         <div className="feed" ref={feedRef}>
           {feed.items.map((item, index) => (
             <PostCard

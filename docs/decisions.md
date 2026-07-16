@@ -162,3 +162,19 @@ creator permission. It selects already-short vertical sources and preserves the
 official player. Ranking scores still choose the strongest candidate within each
 origin slot, video media receives a small presentation-fit boost, and course diversity
 remains a best-effort constraint inside the alternating sequence.
+
+## 2026-07-16: Full-Screen YouTube Creator Posts
+
+**Decision:** On creator Short posts, the official YouTube iframe occupies the entire
+phone viewport. Backstory's header, action rail, captions, and recommendation controls
+are not rendered over the player.
+
+**Rationale:** The creator video should feel native to the full-screen feed. YouTube's
+own title, channel, caption, sound, and playback controls must remain unobscured, so a
+full-screen official player and simultaneous Backstory overlay are incompatible.
+
+**Consequence:** Course explanation and Backstory actions remain available on adjacent
+Backstory-owned posts, while creator posts rely on YouTube's native attribution and
+controls. The parent feed must continue accepting vertical scroll gestures that begin
+inside the full-screen iframe. Cropping or re-hosting YouTube media still requires
+separate creator permission.

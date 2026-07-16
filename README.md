@@ -34,8 +34,9 @@ the live structured planner, set `OPENAI_API_KEY` in `.env` and restart the serv
 planner uses `gpt-5.6` through the Responses API and rejects output that crosses the
 completed chapter boundary.
 
-Creator posts stream from YouTube through its privacy-enhanced embed player and need a
-network connection. Backstory does not download or re-host YouTube media.
+Creator posts stream full-screen through YouTube's privacy-enhanced embed player and
+need a network connection. YouTube's native controls replace Backstory chrome on those
+posts. Backstory does not download or re-host YouTube media.
 
 ## Judge Demo
 

@@ -39,26 +39,33 @@ test("renders a full-viewport feed with inspectable provenance", async ({ page }
   await page.screenshot({ path: testInfo.outputPath("provenance.png"), fullPage: false });
 });
 
-test("keeps YouTube creator media in its official attributed player", async ({ page }) => {
+test("fills creator posts with the official YouTube player", async ({ page }) => {
   await page.goto("/");
   const youtubePost = page.locator(".feed-post.is-youtube").first();
   await youtubePost.scrollIntoViewIfNeeded();
   await expect(youtubePost.locator("iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\//);
-  await expect(youtubePost.getByText(/^YouTube · /)).toBeVisible();
-  await expect(youtubePost.getByRole("link", { name: /Open .* on YouTube/i })).toBeVisible();
   const geometry = await youtubePost.evaluate((post) => {
+    const postBox = post.getBoundingClientRect();
     const player = post.querySelector("iframe")?.getBoundingClientRect();
-    const actions = post.querySelector(".action-rail")?.getBoundingClientRect();
-    const source = post.querySelector(".youtube-source-strip")?.getBoundingClientRect();
     return {
-      player: player && { width: player.width, height: player.height, right: player.right, bottom: player.bottom },
-      actions: actions && { left: actions.left },
-      source: source && { top: source.top }
+      post: { width: postBox.width, height: postBox.height, top: postBox.top, left: postBox.left },
+      player: player && { width: player.width, height: player.height, top: player.top, left: player.left }
     };
   });
-  expect((geometry.player?.height ?? 0) / (geometry.player?.width ?? 1)).toBeGreaterThan(1.7);
-  expect(geometry.actions?.left).toBeGreaterThanOrEqual(geometry.player?.right ?? 0);
-  expect(geometry.source?.top).toBeGreaterThanOrEqual(geometry.player?.bottom ?? 0);
+  expect(Math.abs((geometry.player?.width ?? 0) - geometry.post.width)).toBeLessThan(2);
+  expect(Math.abs((geometry.player?.height ?? 0) - geometry.post.height)).toBeLessThan(2);
+  expect(Math.abs((geometry.player?.top ?? 0) - geometry.post.top)).toBeLessThan(2);
+  expect(Math.abs((geometry.player?.left ?? 0) - geometry.post.left)).toBeLessThan(2);
+  await expect(youtubePost.locator(".action-rail, .post-copy, .youtube-source-strip")).toHaveCount(0);
+  await expect(page.locator(".app-header")).toHaveCount(0);
+
+  const playerBox = await youtubePost.locator("iframe").boundingBox();
+  expect(playerBox).not.toBeNull();
+  if (playerBox) {
+    await page.mouse.move(playerBox.x + playerBox.width / 2, playerBox.y + playerBox.height / 2);
+    await page.mouse.wheel(0, page.viewportSize()?.height ?? 800);
+    await expect(page.locator(".feed-post").nth(2)).toHaveClass(/is-active/);
+  }
 });
 
 test("pages the feed and adapts when the LMS advances", async ({ page }, testInfo) => {
@@ -67,6 +74,9 @@ test("pages the feed and adapts when the LMS advances", async ({ page }, testInf
   await feed.evaluate((node) => node.scrollTo({ top: node.clientHeight, behavior: "auto" }));
   await expect(page.locator(".feed-post").nth(1)).toHaveClass(/is-active/);
 
+  await feed.evaluate((node) => node.scrollTo({ top: 0, behavior: "auto" }));
+  await expect(page.locator(".feed-post").first()).toHaveClass(/is-active/);
+  await expect(page.getByRole("button", { name: "Open demo classroom controls" })).toBeVisible();
   await page.getByRole("button", { name: "Open demo classroom controls" }).click();
   const demoSheet = page.getByRole("dialog", { name: "Demo classroom" });
   await expect(demoSheet.getByText("World History", { exact: true })).toBeVisible();

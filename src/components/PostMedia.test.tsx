@@ -26,9 +26,6 @@ describe("PostMedia", () => {
     rerender(<PostMedia post={post} active paused={false} muted />);
     const player = screen.getByTitle(/Mitosis: witness/i);
     expect(player).toHaveAttribute("src", expect.stringContaining("youtube-nocookie.com/embed/PcXKbsDJkvA"));
-    expect(screen.getByRole("link", { name: /Open .* on YouTube/i })).toHaveAttribute(
-      "href",
-      "https://www.youtube.com/shorts/PcXKbsDJkvA"
-    );
+    expect(screen.queryByRole("link", { name: /YouTube/i })).not.toBeInTheDocument();
   });
 });

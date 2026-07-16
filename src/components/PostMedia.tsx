@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import type { FeedPost } from "../../shared/contracts";
 import { PostVisual } from "./PostVisual";
 
@@ -85,12 +85,6 @@ export function PostMedia({ post, active, paused, muted }: PostMediaProps) {
             </div>
           </div>
         )}
-        <div className="youtube-source-strip">
-          <span>YouTube · {media.channelName}</span>
-          <a href={media.canonicalUrl} target="_blank" rel="noreferrer" aria-label={`Open ${media.title} on YouTube`}>
-            Watch on YouTube <ExternalLink aria-hidden="true" />
-          </a>
-        </div>
       </div>
     );
   }

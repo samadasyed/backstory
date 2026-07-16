@@ -134,14 +134,14 @@ content in the product.
 - Keep commits and documentation clear enough to show what Codex contributed.
 - Document meaningful product and engineering decisions as work proceeds.
 - Prefer focused vertical slices that can be demonstrated over broad integrations.
-- Add verification commands here once the stack is scaffolded.
+- Run `npm run typecheck`, `npm run lint`, `npm test`, `npm run test:e2e`, and
+  `npm run build` before treating a feature as complete.
 - Keep setup and judge testing instructions current in the eventual README.
 
 ## Current Unknowns
 
 These are not settled decisions:
 
-- Final client and backend framework
 - Hosting and persistence provider
 - Authentication approach beyond the synthetic demo account
 - Human creator ingestion workflow

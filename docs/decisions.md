@@ -61,3 +61,43 @@ test and demonstrate.
 
 **Consequence:** GPT-5.6 should produce structured concepts and content plans, while
 application code applies safety, provenance, diversity, and ranking constraints.
+
+## 2026-07-16: Mobile-First PWA For The MVP
+
+**Decision:** The first client is an installable React and Vite progressive web app,
+served by an Express TypeScript API from the same repository.
+
+**Rationale:** A PWA gives iPhone users a full-screen, add-to-home-screen experience
+while also giving judges a link they can run immediately. A single deployable service
+keeps API keys server-side and avoids adding native build and review dependencies to
+the hackathon critical path.
+
+**Consequence:** Native iOS packaging remains a future distribution option. Product
+logic and shared contracts should remain portable, but native parity is not part of
+the first vertical slice.
+
+## 2026-07-16: In-Memory Synthetic Demo State
+
+**Decision:** The MVP uses a Canvas-shaped synthetic fixture and in-memory passive
+preference state.
+
+**Rationale:** This proves the adapter boundary, content pipeline, spoiler behavior,
+and visible LMS transition without collecting student records or depending on school
+administrator authorization.
+
+**Consequence:** The server resets on restart and provides explicit demo reset and
+chapter-advance endpoints. Production persistence and authentication are still open
+decisions.
+
+## 2026-07-16: Original Generated Demo Media
+
+**Decision:** The initial feed uses project-owned generated imagery and original
+Backstory Editorial scripts instead of movie stills, cover art, scraped video, or
+unreleased creator footage.
+
+**Rationale:** The feed needs strong visual material without making unsupported media
+rights claims. Human-origin posts refer to original editorial authorship, not simulated
+human footage.
+
+**Consequence:** Actual creator-video fixtures must not be labeled as permission-backed
+until footage and releases exist.

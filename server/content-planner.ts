@@ -2,6 +2,10 @@ import OpenAI from "openai";
 import { contentPlanSchema, type ContentPlan, type LearningContext } from "../shared/contracts.js";
 import { contentPlanJsonSchema } from "../shared/content-plan-schema.js";
 
+export function planAsksViewerQuestion(plan: ContentPlan): boolean {
+  return [plan.hook, plan.angle, ...plan.beats.map((beat) => beat.text)].some((text) => text.includes("?"));
+}
+
 function createFixturePlan(context: LearningContext, courseId: string): ContentPlan {
   const focus = context.focuses.find((candidate) => candidate.courseId === courseId) ?? context.focuses[0]!;
   const sourceId = focus.learningItem.resourceIds[0]!;
@@ -19,7 +23,7 @@ function createFixturePlan(context: LearningContext, courseId: string): ContentP
     beats: [
       { text: focus.learningItem.title, framing: "fact", sourceId },
       { text: focus.concepts[0] ?? focus.topic, framing: "fact", sourceId },
-      { text: "Notice the pattern, no quiz attached.", framing: "creative", sourceId }
+      { text: "The pattern, shown in motion.", framing: "creative", sourceId }
     ],
     conceptTags: focus.concepts.slice(0, 3),
     revealsThrough: focus.sequenceBoundary.completedThrough
@@ -44,7 +48,7 @@ export async function createContentPlan(context: LearningContext, requestedCours
   const response = await client.responses.create({
     model: "gpt-5.6",
     instructions:
-      "You are Backstory's curriculum-aware editorial planner. Create one low-pressure, entertaining short-form post. Ground every beat in the supplied source. Never reveal beyond completedThrough. Do not create a quiz, grade, task, or mastery judgment.",
+      "You are Backstory's curriculum-aware editorial planner. Create one passive, entertaining short-form post that asks nothing from the viewer. Ground every beat in the supplied source. Never reveal beyond completedThrough. Do not ask a question, solicit an answer, create a poll, quiz, grade, task, checkpoint, or mastery judgment.",
     input: JSON.stringify({
       learningContext: {
         studentId: context.studentId,
@@ -70,6 +74,9 @@ export async function createContentPlan(context: LearningContext, requestedCours
   const plan = contentPlanSchema.parse(JSON.parse(response.output_text));
   if (plan.revealsThrough > focus.sequenceBoundary.completedThrough) {
     throw new Error("Generated plan crossed the course sequence boundary");
+  }
+  if (planAsksViewerQuestion(plan)) {
+    throw new Error("Generated plan asked the viewer a question");
   }
 
   return { plan, mode: "gpt-5.6", courseId: focus.courseId };

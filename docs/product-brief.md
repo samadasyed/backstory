@@ -47,7 +47,6 @@ The student opens directly into a vertical feed. Posts may include:
 - Visual maps, diagrams, timelines, and comparisons
 - Memes and point-of-view scenes
 - Details to notice that do not spoil upcoming material
-- Optional opinion polls without grades or correct-answer treatment
 
 For *The Great Gatsby* chapters 4-5, examples include:
 
@@ -106,6 +105,7 @@ The hackathon MVP succeeds when a judge can see that:
 5. The system prevents spoilers and explains recommendation relevance.
 6. Passive interaction changes subsequent recommendations.
 7. No required academic task interrupts the scrolling experience.
+8. No post asks the student to answer a question or choose a response.
 
 ## Future Product Surface
 

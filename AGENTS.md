@@ -34,6 +34,7 @@ architecture decisions. Record durable decisions in
 Do not introduce these without a new recorded product decision:
 
 - Required quizzes, assignments, or checkpoints
+- Polls, viewer questions, knowledge checks, or prompts that ask the student to answer
 - Visible grades, mastery scores, or academic performance warnings
 - Punitive streaks, deadlines, or daily goals
 - Teacher surveillance of browsing behavior
@@ -42,9 +43,9 @@ Do not introduce these without a new recorded product decision:
 - Three production LMS integrations for the initial demo
 - Arbitrary scraping or reuse of third-party videos without permission
 
-Optional interactions may include saves, reactions, polls, asking for context, and
-"more like this." They must feel like feed interactions, not assessments. Do not show
-correct/incorrect states unless the product direction is intentionally changed.
+Optional interactions may include saves, reactions, asking for context, and "more like
+this." They must feel like feed interactions, not assessments. Feed content should be
+fully consumable without answering a question or choosing a response.
 
 ## Build Week MVP
 

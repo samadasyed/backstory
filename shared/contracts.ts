@@ -96,8 +96,7 @@ export const postFormatSchema = z.enum([
   "kinetic-cards",
   "relationship-map",
   "split-explainer",
-  "forecast",
-  "poll"
+  "forecast"
 ]);
 
 export const feedPostSchema = z.object({
@@ -130,13 +129,6 @@ export const feedPostSchema = z.object({
           detail: z.string()
         })
       )
-      .optional(),
-    poll: z
-      .object({
-        prompt: z.string(),
-        options: z.array(z.string()).min(2).max(4),
-        percentages: z.array(z.number().int().min(0).max(100))
-      })
       .optional()
   }),
   conceptTags: z.array(z.string()),
@@ -191,7 +183,7 @@ export const demoStateSchema = z.object({
 export const contentPlanSchema = z.object({
   hook: z.string(),
   angle: z.string(),
-  format: z.enum(["kinetic-cards", "relationship-map", "forecast", "poll"]),
+  format: z.enum(["kinetic-cards", "relationship-map", "forecast"]),
   beats: z.array(
     z.object({
       text: z.string(),

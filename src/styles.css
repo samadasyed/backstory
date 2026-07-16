@@ -255,7 +255,6 @@ button {
 .cinematic-visual,
 .kinetic-visual,
 .forecast-visual,
-.poll-visual,
 .relationship-visual,
 .split-visual {
   position: absolute;
@@ -270,23 +269,20 @@ button {
 
 .course-course-world-history .kinetic-visual,
 .course-course-biology .kinetic-visual,
-.course-course-algebra-2 .kinetic-visual,
-.course-course-algebra-2 .poll-visual {
+.course-course-algebra-2 .kinetic-visual {
   border-top: 72px solid color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .cinematic-visual img,
 .kinetic-visual img,
-.forecast-visual > img,
-.poll-visual > img {
+.forecast-visual > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .cinematic-visual img,
-.forecast-visual > img,
-.poll-visual > img {
+.forecast-visual > img {
   animation: slow-push 16s ease-in-out alternate infinite;
 }
 
@@ -322,8 +318,7 @@ button {
 }
 
 .kinetic-visual::after,
-.forecast-visual::after,
-.poll-visual::after {
+.forecast-visual::after {
   position: absolute;
   inset: 0;
   content: "";
@@ -533,6 +528,22 @@ button {
   opacity: 0.72;
 }
 
+.function-mini-graph {
+  align-self: center;
+  width: 100%;
+  height: 92px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+}
+
+.function-mini-graph .mini-axis {
+  stroke-width: 2;
+  opacity: 0.3;
+}
+
+.function-mini-graph .mini-function { stroke-width: 5; }
+
 .split-arrow {
   align-self: center;
   width: 30px;
@@ -551,8 +562,7 @@ button {
   text-align: center;
 }
 
-.forecast-panel,
-.poll-panel {
+.forecast-panel {
   position: absolute;
   z-index: 1;
   top: 18%;
@@ -566,8 +576,7 @@ button {
   backdrop-filter: blur(14px);
 }
 
-.forecast-panel > svg,
-.poll-panel > svg {
+.forecast-panel > svg {
   width: 30px;
   height: 30px;
   margin-bottom: 18px;
@@ -597,67 +606,6 @@ button {
   padding-top: 7px;
   border-top: 1px solid rgb(255 255 255 / 18%);
   font-size: 12px;
-}
-
-.poll-panel h3 {
-  max-width: 280px;
-  margin: 0 0 18px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 26px;
-  line-height: 1.08;
-}
-
-.poll-options {
-  display: grid;
-  gap: 8px;
-}
-
-.algebra-graph {
-  position: absolute;
-  inset: 72px 0 0;
-  width: 100%;
-  height: calc(100% - 72px);
-  fill: none;
-  stroke-linecap: round;
-}
-
-.algebra-graph .graph-axis {
-  stroke: rgb(255 255 255 / 28%);
-  stroke-width: 2;
-}
-
-.algebra-graph .graph-linear {
-  stroke: #77bdfb;
-  stroke-width: 5;
-}
-
-.algebra-graph .graph-exponential {
-  stroke: var(--accent);
-  stroke-width: 6;
-}
-
-.poll-options button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 10px 12px;
-  border: 1px solid rgb(255 255 255 / 28%);
-  border-radius: 5px;
-  color: white;
-  text-align: left;
-  background: rgb(255 255 255 / 8%);
-  cursor: pointer;
-}
-
-.poll-options button.poll-selected {
-  border-color: var(--accent);
-  color: #0a0c0e;
-  background: var(--accent);
-}
-
-.poll-options strong {
-  font-size: 13px;
 }
 
 .action-rail {
@@ -1164,7 +1112,7 @@ button {
   .post-copy > p { font-size: 12px; }
   .action-rail { bottom: 120px; gap: 1px; }
   .creator-avatar { margin-bottom: 1px; }
-  .forecast-panel, .poll-panel { top: 17%; }
+  .forecast-panel { top: 17%; }
   .kinetic-stack { top: 19%; gap: 6px; }
   .kinetic-stack span { padding: 5px 8px; font-size: 20px; }
 }
@@ -1175,8 +1123,7 @@ button {
   .post-copy h2 { font-size: 21px; }
   .post-copy { right: 66px; left: 12px; }
   .post-top-meta { left: 12px; }
-  .forecast-panel, .poll-panel { right: 66px; left: 12px; }
-  .poll-panel h3 { font-size: 22px; }
+  .forecast-panel { right: 66px; left: 12px; }
   .map-node { width: 115px; padding: 8px; }
 }
 

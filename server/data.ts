@@ -483,7 +483,7 @@ export const feedPosts: FeedPost[] = [
     contextLabel: "English · Gatsby Ch. 5",
     origin: "human",
     creator: { name: "Theo · Backstory Editorial", handle: "@theoreads", initials: "TR" },
-    format: "poll",
+    format: "cinematic",
     durationSeconds: 21,
     eyebrow: "NICK HAS LEFT THE CHAT",
     headline: "You arranged the reunion. Now the room has forgotten conversation.",
@@ -493,12 +493,7 @@ export const feedPosts: FeedPost[] = [
       alt: "An empty chair separates two people at a quiet tea table.",
       accent: "#ffb84d",
       tone: "dark",
-      beats: ["Guest #1 · confused", "Guest #2 · panicking", "Conversation · unavailable"],
-      poll: {
-        prompt: "How fast are you leaving this room?",
-        options: ["Immediately", "After one cup", "I'm staying for the drama"],
-        percentages: [48, 17, 35]
-      }
+      beats: ["Guest #1 · confused", "Guest #2 · panicking", "Conversation · unavailable", "Nick · quietly exits"]
     },
     conceptTags: ["humor", "awkwardness", "character-drama"],
     sequence: { scopeId: "work-great-gatsby", kind: "chapter", requiredThrough: 5, revealsThrough: 5 },
@@ -719,24 +714,19 @@ export const feedPosts: FeedPost[] = [
     contextLabel: "Algebra II · Growth patterns",
     origin: "human",
     creator: { name: "Jules · Backstory Editorial", handle: "@julesgraphs", initials: "JG" },
-    format: "poll",
+    format: "split-explainer",
     durationSeconds: 20,
-    eyebrow: "PICK YOUR GROWTH CURVE",
+    eyebrow: "TWO KINDS OF CHANGE",
     headline: "One pattern adds. The other keeps multiplying.",
     caption: "Linear change wins early surprisingly often. Exponential change is built for the comeback.",
     visual: {
       imageUrl: null,
-      alt: "A no-stakes poll comparing a steady line with a sharply rising exponential curve.",
+      alt: "A comparison of a steady linear pattern and a sharply rising exponential pattern.",
       accent: "#ffd166",
-      tone: "dark",
-      beats: ["LINEAR · add the same amount", "EXPONENTIAL · multiply by the same factor"],
-      poll: {
-        prompt: "Which graph has the better dramatic arc?",
-        options: ["Steady climb", "Late surge", "Both tell a story"],
-        percentages: [24, 58, 18]
-      }
+      tone: "light",
+      beats: ["LINEAR · add the same amount", "EXPONENTIAL · multiply by the same factor", "Same start. Very different pace."]
     },
-    conceptTags: ["math", "functions", "patterns", "poll"],
+    conceptTags: ["math", "functions", "patterns", "visual-explainer"],
     sequence: { scopeId: "unit-exponential-functions", kind: "lesson", requiredThrough: 2, revealsThrough: null },
     why: {
       sourceLabel: "Algebra II · Functions Module",

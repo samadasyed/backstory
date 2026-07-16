@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { Clock3, CloudRain, MoveRight, Quote, Sparkles } from "lucide-react";
+import { Clock3, CloudRain, MoveRight, Sparkles } from "lucide-react";
 import type { FeedPost } from "../../shared/contracts";
 
 type PostVisualProps = {
   post: FeedPost;
   active: boolean;
-  pollChoice: number | null;
-  onPoll: (choice: number) => void;
 };
 
-export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps) {
+export function PostVisual({ post, active }: PostVisualProps) {
   const [beat, setBeat] = useState(0);
 
   useEffect(() => {
@@ -40,6 +38,7 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
   if (post.format === "split-explainer") {
     const isBiology = post.courseId === "course-biology";
     const isHistory = post.courseId === "course-world-history";
+    const isAlgebra = post.courseId === "course-algebra-2";
     return (
       <div className="split-visual" style={{ "--accent": post.visual.accent } as React.CSSProperties}>
         <div className="split-column split-first">
@@ -51,6 +50,12 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
             </div>
           )}
           {isHistory && <Clock3 className="history-clock" aria-hidden="true" />}
+          {isAlgebra && (
+            <svg className="function-mini-graph" viewBox="0 0 120 90" aria-hidden="true">
+              <path className="mini-axis" d="M12 76H110M12 76V10" />
+              <path className="mini-function" d="M18 68L104 18" />
+            </svg>
+          )}
         </div>
         <MoveRight className="split-arrow" aria-hidden="true" />
         <div className="split-column split-second">
@@ -62,6 +67,12 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
             </div>
           )}
           {isHistory && <Clock3 className="history-clock" aria-hidden="true" />}
+          {isAlgebra && (
+            <svg className="function-mini-graph" viewBox="0 0 120 90" aria-hidden="true">
+              <path className="mini-axis" d="M12 76H110M12 76V10" />
+              <path className="mini-function" d="M18 70C58 70 88 62 104 14" />
+            </svg>
+          )}
         </div>
         <p>{post.visual.beats[2]}</p>
       </div>
@@ -80,41 +91,6 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
             {post.visual.beats.map((item) => (
               <span key={item}>{item}</span>
             ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (post.format === "poll" && post.visual.poll) {
-    return (
-      <div className="poll-visual">
-        {post.visual.imageUrl && <img src={post.visual.imageUrl} alt={post.visual.alt} />}
-        {post.courseId === "course-algebra-2" && (
-          <svg className="algebra-graph" viewBox="0 0 320 500" aria-hidden="true">
-            <path className="graph-axis" d="M34 440H294M34 440V72" />
-            <path className="graph-linear" d="M42 410L280 150" />
-            <path className="graph-exponential" d="M42 420C140 418 212 388 280 96" />
-          </svg>
-        )}
-        <div className="poll-panel">
-          <Quote aria-hidden="true" />
-          <h3>{post.visual.poll.prompt}</h3>
-          <div className="poll-options">
-            {post.visual.poll.options.map((option, index) => {
-              const selected = pollChoice === index;
-              return (
-                <button
-                  type="button"
-                  key={option}
-                  className={selected ? "poll-selected" : ""}
-                  onClick={() => onPoll(index)}
-                >
-                  <span>{option}</span>
-                  {pollChoice !== null && <strong>{post.visual.poll?.percentages[index]}%</strong>}
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>

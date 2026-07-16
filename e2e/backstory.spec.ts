@@ -10,6 +10,7 @@ test("renders a full-viewport feed with inspectable provenance", async ({ page }
   const firstPost = page.locator(".feed-post").first();
   await expect(firstPost).toBeVisible();
   await expect(firstPost.locator("img")).toBeVisible();
+  await expect(page.locator(".poll-options")).toHaveCount(0);
 
   const dimensions = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,

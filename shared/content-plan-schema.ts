@@ -7,7 +7,7 @@ export const contentPlanJsonSchema = {
     angle: { type: "string" },
     format: {
       type: "string",
-      enum: ["kinetic-cards", "relationship-map", "forecast", "poll"]
+      enum: ["kinetic-cards", "relationship-map", "forecast"]
     },
     beats: {
       type: "array",

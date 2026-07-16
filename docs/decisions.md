@@ -24,8 +24,20 @@ assignments, quizzes, checkpoints, or demonstrations of mastery.
 actions would turn the experience into more homework and undermine the core value.
 
 **Consequence:** Personalization should primarily use LMS context and passive feed
-signals. Optional polls or questions may exist, but they must not produce grades,
-correct/incorrect pressure, or block continued browsing.
+signals. Posts do not use polls, viewer questions, or knowledge-check prompts, even
+without grades or correct-answer treatment.
+
+## 2026-07-16: No Questions In The Feed
+
+**Decision:** The Build Week feed will not ask students questions or present polls.
+Every post is passively consumable without choosing or submitting a response.
+
+**Rationale:** Even a no-stakes opinion prompt changes the interaction from effortless
+scrolling into a request for participation and can make the product feel like a quiz.
+
+**Consequence:** Saves, reactions, shares, and recommendation controls remain optional
+feed interactions. Content fixtures, renderers, and GPT-5.6 structured output exclude
+poll formats and viewer-directed question prompts.
 
 ## 2026-07-16: LMS Data Is Context, Not A Task List
 

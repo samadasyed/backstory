@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { contentPlanJsonSchema } from "../shared/content-plan-schema";
 import { feedPostSchema, learningContextSchema, type FeedEvent } from "../shared/contracts";
+import { planAsksViewerQuestion } from "./content-planner";
 import { createLearningContext, feedPosts } from "./data";
 import { applyEvent, createRankingState, isPostEligible, rankPosts } from "./ranking";
 
@@ -7,6 +9,23 @@ describe("Backstory domain fixtures", () => {
   it("conforms to the shared contracts", () => {
     expect(() => feedPostSchema.array().parse(feedPosts)).not.toThrow();
     expect(() => learningContextSchema.parse(createLearningContext({ completedThrough: 5, assignedThrough: 5 }))).not.toThrow();
+  });
+
+  it("keeps questions and polls out of feed and planner formats", () => {
+    expect(feedPosts.map((post) => post.format)).not.toContain("poll");
+    expect(feedPosts.some((post) => "poll" in post.visual)).toBe(false);
+    expect(contentPlanJsonSchema.properties.format.enum).not.toContain("poll");
+    expect(JSON.stringify(feedPosts)).not.toMatch(/How fast are you leaving|Which graph has/);
+    expect(
+      planAsksViewerQuestion({
+        hook: "Which pattern grows faster?",
+        angle: "Compare two functions.",
+        format: "kinetic-cards",
+        beats: [{ text: "Watch both curves move.", framing: "creative", sourceId: "source" }],
+        conceptTags: ["functions"],
+        revealsThrough: 2
+      })
+    ).toBe(true);
   });
 });
 

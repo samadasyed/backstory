@@ -28,7 +28,6 @@ export function PostCard({
   const [saved, setSaved] = useState(item.saved);
   const [liked, setLiked] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [pollChoice, setPollChoice] = useState<number | null>(null);
   const impressionSent = useRef(false);
 
   useEffect(() => {
@@ -72,7 +71,7 @@ export function PostCard({
       </button>
 
       <div className={paused ? "visual-paused" : ""}>
-        <PostVisual post={post} active={active && !paused} pollChoice={pollChoice} onPoll={setPollChoice} />
+        <PostVisual post={post} active={active && !paused} />
       </div>
 
       <div className="post-top-meta">

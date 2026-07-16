@@ -178,3 +178,20 @@ Backstory-owned posts, while creator posts rely on YouTube's native attribution 
 controls. The parent feed must continue accepting vertical scroll gestures that begin
 inside the full-screen iframe. Cropping or re-hosting YouTube media still requires
 separate creator permission.
+
+## 2026-07-16: Persistent Home And Profile Navigation
+
+**Decision:** Backstory uses a persistent two-item bottom navigation for Home and the
+student's private Profile. The Profile shows current class context and passive viewing
+activity, but no grades, mastery, streaks, or comparisons with other students.
+
+**Rationale:** The feed remains the primary experience, while students need one stable
+place to understand which classroom signals shape it and review their own activity.
+The mock profile is derived from the same normalized learning context as Home so the
+two surfaces cannot silently disagree about the student's current material.
+
+**Consequence:** Mock watch statistics remain explicitly synthetic until a durable
+activity store and watch-duration event model exist. The official YouTube player fills
+the media area above the opaque navigation strip; Backstory navigation never overlays
+the player. Switching to Profile deactivates feed media and returning Home preserves
+the prior feed position.

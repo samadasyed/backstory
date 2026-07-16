@@ -47,17 +47,23 @@ test("fills creator posts with the official YouTube player", async ({ page }) =>
   const geometry = await youtubePost.evaluate((post) => {
     const postBox = post.getBoundingClientRect();
     const player = post.querySelector("iframe")?.getBoundingClientRect();
+    const navigation = document.querySelector(".bottom-navigation")?.getBoundingClientRect();
     return {
       post: { width: postBox.width, height: postBox.height, top: postBox.top, left: postBox.left },
-      player: player && { width: player.width, height: player.height, top: player.top, left: player.left }
+      player: player && { width: player.width, height: player.height, top: player.top, left: player.left, bottom: player.bottom },
+      navigation: navigation && { height: navigation.height, top: navigation.top }
     };
   });
   expect(Math.abs((geometry.player?.width ?? 0) - geometry.post.width)).toBeLessThan(2);
-  expect(Math.abs((geometry.player?.height ?? 0) - geometry.post.height)).toBeLessThan(2);
+  expect(
+    Math.abs((geometry.player?.height ?? 0) - (geometry.post.height - (geometry.navigation?.height ?? 0)))
+  ).toBeLessThan(2);
   expect(Math.abs((geometry.player?.top ?? 0) - geometry.post.top)).toBeLessThan(2);
   expect(Math.abs((geometry.player?.left ?? 0) - geometry.post.left)).toBeLessThan(2);
+  expect(geometry.player?.bottom).toBeLessThanOrEqual(geometry.navigation?.top ?? 0);
   await expect(youtubePost.locator(".action-rail, .post-copy, .youtube-source-strip")).toHaveCount(0);
   await expect(page.locator(".app-header")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
 
   const playerBox = await youtubePost.locator("iframe").boundingBox();
   expect(playerBox).not.toBeNull();
@@ -66,6 +72,39 @@ test("fills creator posts with the official YouTube player", async ({ page }) =>
     await page.mouse.wheel(0, page.viewportSize()?.height ?? 800);
     await expect(page.locator(".feed-post").nth(2)).toHaveClass(/is-active/);
   }
+});
+
+test("opens a current student profile and returns to the preserved feed", async ({ page }, testInfo) => {
+  await page.goto("/");
+  const feed = page.locator(".feed");
+  await feed.evaluate((node) => node.scrollTo({ top: node.clientHeight * 2, behavior: "auto" }));
+  await expect(page.locator(".feed-post").nth(2)).toHaveClass(/is-active/);
+
+  const navigation = page.getByRole("navigation", { name: "Primary navigation" });
+  await navigation.getByRole("button", { name: "Profile" }).click();
+  await expect(navigation.getByRole("button", { name: "Profile" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
+  await expect(page.getByText("Maya Rivera", { exact: true })).toBeVisible();
+  await expect(page.getByText("The Great Gatsby · Chapter 5", { exact: true })).toBeVisible();
+  await expect(page.getByText("The Cuban Missile Crisis: Thirteen Days · Lesson 4", { exact: true })).toBeVisible();
+  await expect(page.getByText("Cell Cycle and Mitosis · Lesson 3", { exact: true })).toBeVisible();
+  await expect(page.getByText("Exponential Growth and Decay · Lesson 2", { exact: true })).toBeVisible();
+  await expect(page.getByText("36m", { exact: true })).toBeVisible();
+  await expect(page.locator("iframe")).toHaveCount(0);
+
+  const dimensions = await page.evaluate(() => ({
+    viewportWidth: document.documentElement.clientWidth,
+    documentWidth: document.documentElement.scrollWidth,
+    navigationBottom: document.querySelector(".bottom-navigation")?.getBoundingClientRect().bottom,
+    viewportHeight: window.innerHeight
+  }));
+  expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
+  expect(Math.abs((dimensions.navigationBottom ?? 0) - dimensions.viewportHeight)).toBeLessThan(2);
+  await page.screenshot({ path: testInfo.outputPath("profile.png"), fullPage: false });
+
+  await navigation.getByRole("button", { name: "Home" }).click();
+  await expect(navigation.getByRole("button", { name: "Home" })).toHaveAttribute("aria-current", "page");
+  await expect(page.locator(".feed-post").nth(2)).toHaveClass(/is-active/);
 });
 
 test("pages the feed and adapts when the LMS advances", async ({ page }, testInfo) => {

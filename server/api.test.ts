@@ -2,7 +2,7 @@
 
 import request from "supertest";
 import { afterEach, describe, expect, it } from "vitest";
-import { feedResponseSchema } from "../shared/contracts";
+import { feedResponseSchema, studentProfileSchema } from "../shared/contracts";
 import { app } from "./index";
 
 describe("Backstory API", () => {
@@ -35,6 +35,37 @@ describe("Backstory API", () => {
         (item) => item.post.sequence.scopeId === "work-great-gatsby" && item.post.sequence.requiredThrough === 6
       )
     ).toBe(false);
+  });
+
+  it("returns a synthetic student profile from the current learning context", async () => {
+    const response = await request(app).get("/api/profile").expect(200);
+    const profile = studentProfileSchema.parse(response.body);
+
+    expect(profile.student.displayName).toBe("Maya Rivera");
+    expect(profile.classes).toHaveLength(4);
+    expect(profile.classes.find(({ course }) => course.id === "course-english-10")?.current).toMatchObject({
+      title: "The Great Gatsby",
+      positionLabel: "Chapter 5"
+    });
+    expect(profile.stats).toMatchObject({
+      videosWatched: 47,
+      totalWatchSeconds: 2184,
+      savedPosts: 8,
+      connectedClasses: 4
+    });
+  });
+
+  it("keeps the profile current when the mock class advances", async () => {
+    await request(app)
+      .patch("/api/demo/gatsby-position")
+      .send({ completedThrough: 6, assignedThrough: 6 })
+      .expect(200);
+
+    const response = await request(app).get("/api/profile").expect(200);
+    const profile = studentProfileSchema.parse(response.body);
+    expect(profile.classes.find(({ course }) => course.id === "course-english-10")?.current.positionLabel).toBe(
+      "Chapter 6"
+    );
   });
 
   it("rejects malformed YouTube media identifiers", async () => {

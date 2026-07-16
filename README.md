@@ -10,7 +10,8 @@ the Cuban Missile Crisis, cell division, and exponential growth. It mixes render
 Backstory videos with curated vertical YouTube Shorts, preserves course-specific
 provenance, and enforces each class's learning boundary independently. A demo classroom control
 advances Gatsby to Chapter 6 and visibly refreshes the feed without displacing the
-other classes.
+other classes. A private mock profile summarizes Maya's current class context and
+passive viewing activity from the persistent Home and Profile navigation.
 
 ## Run Locally
 

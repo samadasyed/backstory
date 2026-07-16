@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BookOpen, Check, ChevronRight, CloudOff, Layers3, RotateCcw, Sparkles } from "lucide-react";
-import type { FeedEvent, FeedPost, FeedResponse } from "../shared/contracts";
-import { generatePlan, getFeed, resetDemo, sendEvent, updateDemoState } from "./api";
+import type { FeedEvent, FeedPost, FeedResponse, StudentProfile } from "../shared/contracts";
+import { generatePlan, getFeed, getProfile, resetDemo, sendEvent, updateDemoState } from "./api";
 import { AppHeader } from "./components/AppHeader";
+import { BottomNavigation, type AppView } from "./components/BottomNavigation";
 import { BottomSheet } from "./components/BottomSheet";
 import { PostCard } from "./components/PostCard";
+import { ProfileView } from "./components/ProfileView";
 
 type Sheet = "why" | "more" | "demo" | null;
 
@@ -27,6 +29,10 @@ function makeEvent(sessionId: string, postId: string, type: FeedEvent["type"]): 
 
 export default function App() {
   const [feed, setFeed] = useState<FeedResponse | null>(null);
+  const [activeView, setActiveView] = useState<AppView>("home");
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -48,6 +54,19 @@ export default function App() {
       setError(loadError instanceof Error ? loadError.message : "Could not load your feed");
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const loadProfile = useCallback(async () => {
+    setProfileLoading(true);
+    setProfileError(null);
+    try {
+      setProfile(await getProfile());
+      setProfileError(null);
+    } catch (loadError) {
+      setProfileError(loadError instanceof Error ? loadError.message : "Could not load your profile");
+    } finally {
+      setProfileLoading(false);
     }
   }, []);
 
@@ -95,6 +114,7 @@ export default function App() {
       void sendEvent(makeEvent(feed.sessionId, postId, type)).catch(() => {
         setToast("Saved on this device");
       });
+      if (type === "save" || type === "unsave") setProfile(null);
       if (type === "save") setToast("Saved for later");
       if (type === "more-like-this") setToast("We'll bring more like this");
       if (type === "less-like-this") setToast("We'll tune this down");
@@ -121,6 +141,7 @@ export default function App() {
 
   const advanceChapter = async () => {
     await updateDemoState({ completedThrough: 6, assignedThrough: 6 });
+    setProfile(null);
     setActiveIndex(0);
     await loadFeed();
     setSheet(null);
@@ -129,6 +150,7 @@ export default function App() {
 
   const reset = async () => {
     await resetDemo();
+    setProfile(null);
     setActiveIndex(0);
     await loadFeed();
     setSheet(null);
@@ -143,6 +165,12 @@ export default function App() {
     } catch {
       setPlanStatus("Planner unavailable");
     }
+  };
+
+  const changeView = (nextView: AppView) => {
+    setActiveView(nextView);
+    setSheet(null);
+    if (nextView === "profile" && !profile) void loadProfile();
   };
 
   if (loading) {
@@ -171,42 +199,53 @@ export default function App() {
   const activeFocus = feed.context.focuses.find((focus) => focus.courseId === activeCourse.id) ?? feed.context.focuses[0]!;
   return (
     <main className="app-shell">
-      <div className="desktop-context" aria-hidden="true">
+      {activeView === "home" && <div className="desktop-context" aria-hidden="true">
         <span>NOW IN YOUR FEED</span>
         <h1>{activeCourse.name}</h1>
         <p>{activeFocus.topic}</p>
         <div><Layers3 /> {feed.context.courses.length} classes connected</div>
-      </div>
+      </div>}
 
-      <section className="phone-stage" aria-label="Backstory feed">
-        {activePost.media?.kind !== "youtube" && (
-          <AppHeader
-            onDemo={() => openSheet("demo")}
-            lightBackground={feed.items[activeIndex]?.post.visual.tone === "light"}
+      <div className="phone-stage">
+        <section className="home-view" aria-label="Backstory feed" hidden={activeView !== "home"}>
+          {activePost.media?.kind !== "youtube" && (
+            <AppHeader
+              onDemo={() => openSheet("demo")}
+              lightBackground={feed.items[activeIndex]?.post.visual.tone === "light"}
+            />
+          )}
+          <div className="feed" ref={feedRef}>
+            {feed.items.map((item, index) => (
+              <PostCard
+                key={item.post.id}
+                item={item}
+                active={activeView === "home" && index === activeIndex}
+                muted={muted}
+                onToggleMute={() => setMuted((value) => !value)}
+                onWhy={() => openSheet("why", item.post)}
+                onMore={() => openSheet("more", item.post)}
+                onEvent={(type) => handleEvent(item.post.id, type)}
+                onShare={() => void sharePost(item.post)}
+              />
+            ))}
+          </div>
+        </section>
+        {activeView === "profile" && (
+          <ProfileView
+            profile={profile}
+            loading={profileLoading}
+            error={profileError}
+            onRetry={() => void loadProfile()}
           />
         )}
-        <div className="feed" ref={feedRef}>
-          {feed.items.map((item, index) => (
-            <PostCard
-              key={item.post.id}
-              item={item}
-              active={index === activeIndex}
-              muted={muted}
-              onToggleMute={() => setMuted((value) => !value)}
-              onWhy={() => openSheet("why", item.post)}
-              onMore={() => openSheet("more", item.post)}
-              onEvent={(type) => handleEvent(item.post.id, type)}
-              onShare={() => void sharePost(item.post)}
-            />
-          ))}
-        </div>
-      </section>
+        <BottomNavigation activeView={activeView} onChange={changeView} />
+      </div>
 
-      <div className="desktop-note" aria-hidden="true">
+      {activeView === "home" && <div className="desktop-note" aria-hidden="true">
         <span>BACKSTORY SIGNAL</span>
         <p>{activeFocus.learningItem.title}</p>
         <small>Canvas synced · spoiler-safe</small>
-      </div>
+      </div>}
 
       <BottomSheet title="Why this backstory?" open={sheet === "why"} onClose={() => setSheet(null)}>
         {selectedPost && (

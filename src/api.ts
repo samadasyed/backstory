@@ -1,9 +1,11 @@
 import {
   demoStateSchema,
   feedResponseSchema,
+  studentProfileSchema,
   type DemoState,
   type FeedEvent,
-  type FeedResponse
+  type FeedResponse,
+  type StudentProfile
 } from "../shared/contracts";
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -25,6 +27,10 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
 export async function getFeed(): Promise<FeedResponse> {
   return feedResponseSchema.parse(await request<unknown>("/api/feed"));
+}
+
+export async function getProfile(): Promise<StudentProfile> {
+  return studentProfileSchema.parse(await request<unknown>("/api/profile"));
 }
 
 export async function sendEvent(event: FeedEvent): Promise<void> {

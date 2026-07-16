@@ -14,6 +14,7 @@ import {
 import {
   courses,
   createLearningContext,
+  createStudentProfile,
   feedPosts,
   rawCanvasAssignments,
   rawCanvasCourses,
@@ -45,6 +46,10 @@ app.get("/api/feed", (_request, response) => {
     generationMode: process.env.OPENAI_API_KEY ? "gpt-5.6" : "fixture"
   });
   response.json(payload);
+});
+
+app.get("/api/profile", (_request, response) => {
+  response.json(createStudentProfile(demoState, rankingState.savedPostIds.size));
 });
 
 app.post("/api/events", (request, response) => {

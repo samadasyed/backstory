@@ -1,4 +1,12 @@
-import type { Course, DemoState, FeedPost, LearningContext, LearningItem, SourceRef } from "../shared/contracts.js";
+import type {
+  Course,
+  DemoState,
+  FeedPost,
+  LearningContext,
+  LearningItem,
+  SourceRef,
+  StudentProfile
+} from "../shared/contracts.js";
 
 export const englishCourse: Course = {
   id: "course-english-10",
@@ -300,6 +308,39 @@ export function createLearningContext(state: DemoState): LearningContext {
         }
       }
     ]
+  };
+}
+
+function titleCase(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+export function createStudentProfile(state: DemoState, savedPosts = 0): StudentProfile {
+  const context = createLearningContext(state);
+  return {
+    student: {
+      id: context.studentId,
+      displayName: "Maya Rivera",
+      initials: "MR",
+      gradeLabel: "10th grade",
+      connectionLabel: "Mock Canvas connected"
+    },
+    classes: context.focuses.map((focus) => ({
+      course: context.courses.find((course) => course.id === focus.courseId)!,
+      current: {
+        title: focus.workTitle ?? focus.learningItem.title,
+        positionLabel: `${titleCase(focus.sequenceBoundary.kind)} ${focus.sequenceBoundary.assignedThrough}`,
+        detail: focus.topic
+      }
+    })),
+    stats: {
+      videosWatched: 47,
+      totalWatchSeconds: 2_184,
+      savedPosts: 8 + savedPosts,
+      connectedClasses: context.courses.length
+    },
+    generatedAt: context.generatedAt,
+    demoMode: true
   };
 }
 

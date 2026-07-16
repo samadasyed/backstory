@@ -179,6 +179,34 @@ export const feedResponseSchema = z.object({
   generationMode: z.enum(["fixture", "gpt-5.6"])
 });
 
+export const studentProfileSchema = z.object({
+  student: z.object({
+    id: z.string(),
+    displayName: z.string(),
+    initials: z.string(),
+    gradeLabel: z.string(),
+    connectionLabel: z.string()
+  }),
+  classes: z.array(
+    z.object({
+      course: courseSchema,
+      current: z.object({
+        title: z.string(),
+        positionLabel: z.string(),
+        detail: z.string()
+      })
+    })
+  ),
+  stats: z.object({
+    videosWatched: z.number().int().nonnegative(),
+    totalWatchSeconds: z.number().int().nonnegative(),
+    savedPosts: z.number().int().nonnegative(),
+    connectedClasses: z.number().int().nonnegative()
+  }),
+  generatedAt: z.string().datetime(),
+  demoMode: z.boolean()
+});
+
 export const feedEventSchema = z.object({
   eventId: z.string(),
   sessionId: z.string(),
@@ -227,6 +255,7 @@ export type SourceRef = z.infer<typeof sourceRefSchema>;
 export type FeedPost = z.infer<typeof feedPostSchema>;
 export type FeedItem = z.infer<typeof feedItemSchema>;
 export type FeedResponse = z.infer<typeof feedResponseSchema>;
+export type StudentProfile = z.infer<typeof studentProfileSchema>;
 export type FeedEvent = z.infer<typeof feedEventSchema>;
 export type DemoState = z.infer<typeof demoStateSchema>;
 export type ContentPlan = z.infer<typeof contentPlanSchema>;

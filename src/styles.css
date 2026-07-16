@@ -264,6 +264,17 @@ button {
   height: 100%;
 }
 
+.feed-post.course-course-world-history { background: #2a1318; }
+.feed-post.course-course-biology { background: #092b29; }
+.feed-post.course-course-algebra-2 { background: #172238; }
+
+.course-course-world-history .kinetic-visual,
+.course-course-biology .kinetic-visual,
+.course-course-algebra-2 .kinetic-visual,
+.course-course-algebra-2 .poll-visual {
+  border-top: 72px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
 .cinematic-visual img,
 .kinetic-visual img,
 .forecast-visual > img,
@@ -479,6 +490,49 @@ button {
   line-height: 1.08;
 }
 
+.chromosome-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 92px;
+  color: currentColor;
+}
+
+.chromosome-stage i {
+  position: relative;
+  width: 7px;
+  height: 42px;
+  border-radius: 4px;
+  background: currentColor;
+  transform: rotate(34deg);
+}
+
+.chromosome-stage i::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  background: currentColor;
+  transform: rotate(112deg);
+}
+
+.chromosome-separated {
+  display: grid;
+  grid-template-columns: repeat(2, 18px);
+  gap: 24px 38px;
+}
+
+.chromosome-separated i:nth-child(even) { transform: rotate(-34deg); }
+
+.history-clock {
+  align-self: center;
+  width: 62px;
+  height: 62px;
+  stroke-width: 1.25;
+  opacity: 0.72;
+}
+
 .split-arrow {
   align-self: center;
   width: 30px;
@@ -556,6 +610,30 @@ button {
 .poll-options {
   display: grid;
   gap: 8px;
+}
+
+.algebra-graph {
+  position: absolute;
+  inset: 72px 0 0;
+  width: 100%;
+  height: calc(100% - 72px);
+  fill: none;
+  stroke-linecap: round;
+}
+
+.algebra-graph .graph-axis {
+  stroke: rgb(255 255 255 / 28%);
+  stroke-width: 2;
+}
+
+.algebra-graph .graph-linear {
+  stroke: #77bdfb;
+  stroke-width: 5;
+}
+
+.algebra-graph .graph-exponential {
+  stroke: var(--accent);
+  stroke-width: 6;
 }
 
 .poll-options button {
@@ -721,28 +799,6 @@ button {
   font-weight: 750;
   background: transparent;
   cursor: pointer;
-}
-
-.feed-progress {
-  position: absolute;
-  z-index: 10;
-  top: 50%;
-  right: 2px;
-  display: grid;
-  gap: 3px;
-  transform: translateY(-50%);
-}
-
-.feed-progress span {
-  width: 2px;
-  height: 13px;
-  background: rgb(255 255 255 / 25%);
-  transition: height 180ms ease, background 180ms ease;
-}
-
-.feed-progress span.active {
-  height: 22px;
-  background: var(--lime);
 }
 
 .desktop-context,
@@ -954,6 +1010,36 @@ button {
 .demo-status span { color: #686c70; font-size: 11px; }
 .demo-status strong { font-family: Georgia, "Times New Roman", serif; font-size: 18px; }
 .demo-status small { color: #686c70; font-size: 11px; }
+
+.demo-course-list {
+  display: grid;
+  margin: 0 0 18px;
+  border-top: 1px solid #dedbd4;
+}
+
+.demo-course-list > div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.7fr) minmax(0, 1.3fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 47px;
+  border-bottom: 1px solid #dedbd4;
+}
+
+.demo-course-list span {
+  color: #1c1e20;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.demo-course-list small {
+  overflow: hidden;
+  color: #686c70;
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .primary-action,
 .planner-action {

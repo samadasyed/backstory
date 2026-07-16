@@ -12,7 +12,7 @@ import {
   type FeedEvent
 } from "../shared/contracts.js";
 import {
-  course,
+  courses,
   createLearningContext,
   feedPosts,
   rawCanvasAssignments,
@@ -40,7 +40,7 @@ app.get("/api/feed", (_request, response) => {
   const payload = feedResponseSchema.parse({
     sessionId: "demo-session-maya",
     context,
-    items: rankPosts(feedPosts, demoState, rankingState),
+    items: rankPosts(feedPosts, context, rankingState),
     demoMode: true,
     generationMode: process.env.OPENAI_API_KEY ? "gpt-5.6" : "fixture"
   });
@@ -68,9 +68,17 @@ app.get("/api/posts/:postId/why", (request, response) => {
     response.status(404).json({ error: "Post not found" });
     return;
   }
+  const context = createLearningContext(demoState);
+  const course = context.courses.find((candidate) => candidate.id === post.courseId);
+  const focus = context.focuses.find((candidate) => candidate.learningItem.id === post.learningItemId);
+  if (!course || !focus) {
+    response.status(404).json({ error: "Learning context not found" });
+    return;
+  }
   response.json({
     postId: post.id,
     course,
+    learningItem: focus.learningItem,
     ...post.why,
     aiGenerated: post.origin !== "human",
     sources: post.sources
@@ -97,9 +105,14 @@ app.post("/api/demo/reset", (_request, response) => {
   response.json({ ok: true, state: demoState });
 });
 
-app.post("/api/ai/plan", async (_request, response, next) => {
+app.post("/api/ai/plan", async (request, response, next) => {
   try {
-    const result = await createContentPlan(createLearningContext(demoState));
+    const payload = z.object({ courseId: z.string().optional() }).safeParse(request.body ?? {});
+    if (!payload.success) {
+      response.status(400).json({ error: "Invalid planner request" });
+      return;
+    }
+    const result = await createContentPlan(createLearningContext(demoState), payload.data.courseId);
     response.json(result);
   } catch (error) {
     next(error);
@@ -111,14 +124,28 @@ app.get("/api/mock-canvas/v1/users/self/courses", (_request, response) => {
 });
 
 app.get("/api/mock-canvas/v1/courses/:courseId/modules", (_request, response) => {
-  response.json(rawCanvasModules(demoState));
+  const courseId = _request.params.courseId;
+  if (!courses.some((course) => course.externalId === courseId)) {
+    response.status(404).json({ error: "Course not found" });
+    return;
+  }
+  response.json(rawCanvasModules(courseId, demoState));
 });
 
 app.get("/api/mock-canvas/v1/courses/:courseId/assignments", (_request, response) => {
-  response.json(rawCanvasAssignments(demoState));
+  const courseId = _request.params.courseId;
+  if (!courses.some((course) => course.externalId === courseId)) {
+    response.status(404).json({ error: "Course not found" });
+    return;
+  }
+  response.json(rawCanvasAssignments(courseId, demoState));
 });
 
 app.get("/api/mock-canvas/v1/courses/:courseId/pages/:pageUrl", (request, response) => {
+  if (!courses.some((course) => course.externalId === request.params.courseId)) {
+    response.status(404).json({ error: "Course not found" });
+    return;
+  }
   response.json({
     page_id: request.params.pageUrl,
     title: request.params.pageUrl.replaceAll("-", " "),

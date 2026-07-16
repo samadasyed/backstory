@@ -101,3 +101,18 @@ human footage.
 
 **Consequence:** Actual creator-video fixtures must not be labeled as permission-backed
 until footage and releases exist.
+
+## 2026-07-16: Multi-Course Synthetic Feed
+
+**Decision:** The Build Week student is enrolled in four synthetic Canvas courses:
+English 10, World History, Biology, and Algebra II. The default For You feed mixes
+current context from all four courses.
+
+**Rationale:** A single-novel feed demonstrates spoiler awareness but understates the
+core product promise. A believable student schedule shows that Backstory can normalize
+different kinds of course progression and make one coherent consumer feed from them.
+
+**Consequence:** Feed eligibility and preference signals are scoped by course and
+learning sequence. The Great Gatsby Chapter 6 transition remains the primary scripted
+LMS demo, while the other course signals stay stable and remain visible after that
+transition.

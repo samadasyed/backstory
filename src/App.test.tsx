@@ -17,7 +17,11 @@ vi.mock("./api", () => ({
 const feed: FeedResponse = {
   sessionId: "test-session",
   context: createLearningContext({ completedThrough: 5, assignedThrough: 5 }),
-  items: rankPosts(feedPosts, { completedThrough: 5, assignedThrough: 5 }, createRankingState()),
+  items: rankPosts(
+    feedPosts,
+    createLearningContext({ completedThrough: 5, assignedThrough: 5 }),
+    createRankingState()
+  ),
   demoMode: true,
   generationMode: "fixture"
 };
@@ -45,7 +49,7 @@ describe("Backstory feed", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open demo classroom controls" }));
     expect(await screen.findByRole("dialog", { name: "Demo classroom" })).toBeInTheDocument();
     expect(screen.getByText("Advance class to Chapter 6")).toBeInTheDocument();
-    expect(screen.queryByText(/mastery|grade|points/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\b(mastery|grade|points)\b/i)).not.toBeInTheDocument();
     await waitFor(() => expect(api.sendEvent).toHaveBeenCalled());
   });
 });

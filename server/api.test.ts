@@ -10,15 +10,22 @@ describe("Backstory API", () => {
     await request(app).post("/api/demo/reset");
   });
 
-  it("returns a contract-valid, mixed feed without Chapter 6 spoilers", async () => {
+  it("returns a contract-valid, multi-course feed without Chapter 6 spoilers", async () => {
     const response = await request(app).get("/api/feed").expect(200);
     const feed = feedResponseSchema.parse(response.body);
 
-    expect(feed.context.focus.spoilerBoundary.completedThrough).toBe(5);
-    expect(feed.items.length).toBeGreaterThanOrEqual(8);
+    const gatsbyFocus = feed.context.focuses.find((focus) => focus.id === "focus-gatsby-current");
+    expect(gatsbyFocus?.sequenceBoundary.completedThrough).toBe(5);
+    expect(feed.context.courses).toHaveLength(4);
+    expect(feed.items.length).toBeGreaterThanOrEqual(14);
     expect(feed.items.some((item) => item.post.origin === "human")).toBe(true);
     expect(feed.items.some((item) => item.post.origin === "ai")).toBe(true);
-    expect(feed.items.some((item) => item.post.minChapter === 6)).toBe(false);
+    expect(new Set(feed.items.slice(0, 6).map((item) => item.post.courseId)).size).toBe(4);
+    expect(
+      feed.items.some(
+        (item) => item.post.sequence.scopeId === "work-great-gatsby" && item.post.sequence.requiredThrough === 6
+      )
+    ).toBe(false);
   });
 
   it("advances the Canvas-shaped fixture and admits Chapter 6 posts", async () => {
@@ -29,11 +36,35 @@ describe("Backstory API", () => {
 
     const feedResponse = await request(app).get("/api/feed").expect(200);
     const feed = feedResponseSchema.parse(feedResponse.body);
-    expect(feed.context.focus.learningItem.title).toContain("Chapters 5-6");
-    expect(feed.items.some((item) => item.post.minChapter === 6)).toBe(true);
+    const gatsbyFocus = feed.context.focuses.find((focus) => focus.id === "focus-gatsby-current");
+    expect(gatsbyFocus?.learningItem.title).toContain("Chapters 5-6");
+    expect(
+      feed.items.some(
+        (item) => item.post.sequence.scopeId === "work-great-gatsby" && item.post.sequence.requiredThrough === 6
+      )
+    ).toBe(true);
+    expect(feed.items.some((item) => item.post.courseId === "course-biology")).toBe(true);
 
     const modules = await request(app).get("/api/mock-canvas/v1/courses/101/modules?include[]=items").expect(200);
     expect(modules.body[0].items[5].completion_requirement.completed).toBe(true);
+  });
+
+  it("keeps Canvas fixtures isolated by course", async () => {
+    const courses = await request(app).get("/api/mock-canvas/v1/users/self/courses").expect(200);
+    expect(courses.body).toHaveLength(4);
+
+    const biologyModules = await request(app).get("/api/mock-canvas/v1/courses/303/modules").expect(200);
+    expect(biologyModules.body[0].name).toBe("Cell Division");
+    expect(JSON.stringify(biologyModules.body)).not.toContain("Gatsby");
+
+    await request(app).get("/api/mock-canvas/v1/courses/999/modules").expect(404);
+  });
+
+  it("explains a post using its own course and learning item", async () => {
+    const response = await request(app).get("/api/posts/biology-cell-checkpoints/why").expect(200);
+    expect(response.body.course.name).toBe("Biology");
+    expect(response.body.learningItem.title).toBe("Cell Cycle and Mitosis");
+    expect(response.body.reason).toContain("Biology");
   });
 
   it("deduplicates passive event batches", async () => {

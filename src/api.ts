@@ -46,6 +46,9 @@ export async function resetDemo(): Promise<void> {
   await request("/api/demo/reset", { method: "POST" });
 }
 
-export async function generatePlan(): Promise<{ mode: string; plan: { hook: string; angle: string } }> {
-  return request("/api/ai/plan", { method: "POST" });
+export async function generatePlan(courseId: string): Promise<{ mode: string; courseId: string; plan: { hook: string; angle: string } }> {
+  return request("/api/ai/plan", {
+    method: "POST",
+    body: JSON.stringify({ courseId })
+  });
 }

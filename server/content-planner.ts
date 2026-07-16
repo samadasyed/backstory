@@ -2,25 +2,42 @@ import OpenAI from "openai";
 import { contentPlanSchema, type ContentPlan, type LearningContext } from "../shared/contracts.js";
 import { contentPlanJsonSchema } from "../shared/content-plan-schema.js";
 
-const fixturePlan: ContentPlan = {
-  hook: "Gatsby's rumor resume is doing a lot",
-  angle: "Frame Gatsby's Chapter 4 backstory as a carefully constructed social profile.",
-  format: "kinetic-cards",
-  beats: [
-    { text: "Oxford?", framing: "fact", sourceId: "source-gatsby" },
-    { text: "Inherited fortune?", framing: "fact", sourceId: "source-gatsby" },
-    { text: "He brought receipts.", framing: "interpretation", sourceId: "source-gatsby" }
-  ],
-  conceptTags: ["mystery", "identity", "social-performance"],
-  revealsThrough: 4
-};
+function createFixturePlan(context: LearningContext, courseId: string): ContentPlan {
+  const focus = context.focuses.find((candidate) => candidate.courseId === courseId) ?? context.focuses[0]!;
+  const sourceId = focus.learningItem.resourceIds[0]!;
+  const hooks: Record<string, string> = {
+    "course-english-10": "Gatsby's rumor resume is doing a lot",
+    "course-world-history": "The famous Cold War hotline arrived after the crisis",
+    "course-biology": "Cells use checkpoints before they commit to dividing",
+    "course-algebra-2": "Doubling stays quiet until the numbers get astronomical"
+  };
 
-export async function createContentPlan(context: LearningContext): Promise<{
+  return {
+    hook: hooks[focus.courseId] ?? `The backstory behind ${focus.topic}`,
+    angle: `Turn ${focus.topic} into one low-pressure visual story grounded in the current class resource.`,
+    format: "kinetic-cards",
+    beats: [
+      { text: focus.learningItem.title, framing: "fact", sourceId },
+      { text: focus.concepts[0] ?? focus.topic, framing: "fact", sourceId },
+      { text: "Notice the pattern, no quiz attached.", framing: "creative", sourceId }
+    ],
+    conceptTags: focus.concepts.slice(0, 3),
+    revealsThrough: focus.sequenceBoundary.completedThrough
+  };
+}
+
+export async function createContentPlan(context: LearningContext, requestedCourseId?: string): Promise<{
   plan: ContentPlan;
   mode: "fixture" | "gpt-5.6";
+  courseId: string;
 }> {
+  const focus = requestedCourseId
+    ? context.focuses.find((candidate) => candidate.courseId === requestedCourseId)
+    : context.focuses[0];
+  if (!focus) throw new Error("Unknown course context");
+
   if (!process.env.OPENAI_API_KEY) {
-    return { plan: fixturePlan, mode: "fixture" };
+    return { plan: createFixturePlan(context, focus.courseId), mode: "fixture", courseId: focus.courseId };
   }
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -29,11 +46,15 @@ export async function createContentPlan(context: LearningContext): Promise<{
     instructions:
       "You are Backstory's curriculum-aware editorial planner. Create one low-pressure, entertaining short-form post. Ground every beat in the supplied source. Never reveal beyond completedThrough. Do not create a quiz, grade, task, or mastery judgment.",
     input: JSON.stringify({
-      learningContext: context,
+      learningContext: {
+        studentId: context.studentId,
+        course: context.courses.find((course) => course.id === focus.courseId),
+        focus
+      },
       availableSource: {
-        id: "source-gatsby",
-        title: "The Great Gatsby",
-        locator: "Current assigned chapters"
+        id: focus.learningItem.resourceIds[0],
+        title: focus.learningItem.title,
+        locator: focus.learningItem.sequence?.label ?? "Current class material"
       }
     }),
     text: {
@@ -47,9 +68,9 @@ export async function createContentPlan(context: LearningContext): Promise<{
   });
 
   const plan = contentPlanSchema.parse(JSON.parse(response.output_text));
-  if (plan.revealsThrough > context.focus.spoilerBoundary.completedThrough) {
-    throw new Error("Generated plan crossed the spoiler boundary");
+  if (plan.revealsThrough > focus.sequenceBoundary.completedThrough) {
+    throw new Error("Generated plan crossed the course sequence boundary");
   }
 
-  return { plan, mode: "gpt-5.6" };
+  return { plan, mode: "gpt-5.6", courseId: focus.courseId };
 }

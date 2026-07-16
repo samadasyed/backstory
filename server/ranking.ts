@@ -1,4 +1,4 @@
-import type { DemoState, FeedEvent, FeedItem, FeedPost } from "../shared/contracts.js";
+import type { FeedEvent, FeedItem, FeedPost, LearningContext } from "../shared/contracts.js";
 
 export type RankingState = {
   preferences: Map<string, number>;
@@ -24,8 +24,20 @@ export function createRankingState(): RankingState {
   };
 }
 
-export function isSpoilerSafe(post: FeedPost, state: DemoState): boolean {
-  return post.minChapter <= state.assignedThrough && post.revealsThrough <= state.completedThrough;
+function getSequenceBoundary(post: FeedPost, context: LearningContext) {
+  return context.focuses.find(
+    (focus) =>
+      focus.courseId === post.courseId &&
+      focus.learningItem.id === post.learningItemId &&
+      focus.sequenceBoundary.scopeId === post.sequence.scopeId &&
+      focus.sequenceBoundary.kind === post.sequence.kind
+  )?.sequenceBoundary;
+}
+
+export function isPostEligible(post: FeedPost, context: LearningContext): boolean {
+  const boundary = getSequenceBoundary(post, context);
+  if (!boundary || post.sequence.requiredThrough > boundary.assignedThrough) return false;
+  return post.sequence.revealsThrough === null || post.sequence.revealsThrough <= boundary.completedThrough;
 }
 
 export function applyEvent(event: FeedEvent, posts: FeedPost[], state: RankingState): boolean {
@@ -40,20 +52,25 @@ export function applyEvent(event: FeedEvent, posts: FeedPost[], state: RankingSt
   if (weight === undefined || !post) return true;
 
   for (const tag of post.conceptTags) {
-    const current = state.preferences.get(tag) ?? 0;
-    state.preferences.set(tag, Math.max(-1, Math.min(1, current + weight)));
+    const preferenceKey = `${post.courseId}:${tag}`;
+    const current = state.preferences.get(preferenceKey) ?? 0;
+    state.preferences.set(preferenceKey, Math.max(-1, Math.min(1, current + weight)));
   }
 
   return true;
 }
 
-export function rankPosts(posts: FeedPost[], demoState: DemoState, state: RankingState): FeedItem[] {
-  const eligible = posts.filter((post) => isSpoilerSafe(post, demoState));
+export function rankPosts(posts: FeedPost[], context: LearningContext, state: RankingState): FeedItem[] {
+  const eligible = posts.filter((post) => isPostEligible(post, context));
 
   const scored = eligible
     .map((post, index) => {
-      const preference = post.conceptTags.reduce((sum, tag) => sum + (state.preferences.get(tag) ?? 0), 0);
-      const contextRelevance = post.minChapter === demoState.assignedThrough ? 1 : 0.45;
+      const preference = post.conceptTags.reduce(
+        (sum, tag) => sum + (state.preferences.get(`${post.courseId}:${tag}`) ?? 0),
+        0
+      );
+      const boundary = getSequenceBoundary(post, context);
+      const contextRelevance = post.sequence.requiredThrough === boundary?.assignedThrough ? 1 : 0.45;
       const editorialQuality = 1 - index / Math.max(posts.length * 2, 1);
       const humanMix = post.origin === "human" ? 0.04 : 0;
       const score = contextRelevance * 0.48 + editorialQuality * 0.32 + preference * 0.16 + humanMix;
@@ -72,18 +89,26 @@ export function rankPosts(posts: FeedPost[], demoState: DemoState, state: Rankin
 function diversify(items: FeedItem[]): FeedItem[] {
   const result: FeedItem[] = [];
   const remaining = [...items];
+  const availableCourseIds = new Set(items.map((item) => item.post.courseId));
+  const openingCoverageSize = Math.min(availableCourseIds.size, 4);
 
   while (remaining.length > 0) {
     const lastTwo = result.slice(-2);
     const repeatedFormat = lastTwo.length === 2 && lastTwo.every((item) => item.post.format === lastTwo[0]?.post.format);
     const repeatedOrigin = lastTwo.length === 2 && lastTwo.every((item) => item.post.origin === lastTwo[0]?.post.origin);
+    const repeatedCourse = lastTwo.length === 2 && lastTwo.every((item) => item.post.courseId === lastTwo[0]?.post.courseId);
     let nextIndex = 0;
 
-    if (repeatedFormat || repeatedOrigin) {
+    if (result.length < openingCoverageSize) {
+      const seenCourseIds = new Set(result.map((item) => item.post.courseId));
+      const unseenCourse = remaining.findIndex((item) => !seenCourseIds.has(item.post.courseId));
+      if (unseenCourse >= 0) nextIndex = unseenCourse;
+    } else if (repeatedFormat || repeatedOrigin || repeatedCourse) {
       const alternative = remaining.findIndex(
         (item) =>
           (!repeatedFormat || item.post.format !== lastTwo[0]?.post.format) &&
-          (!repeatedOrigin || item.post.origin !== lastTwo[0]?.post.origin)
+          (!repeatedOrigin || item.post.origin !== lastTwo[0]?.post.origin) &&
+          (!repeatedCourse || item.post.courseId !== lastTwo[0]?.post.courseId)
       );
       if (alternative >= 0) nextIndex = alternative;
     }

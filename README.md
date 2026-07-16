@@ -4,11 +4,13 @@ Backstory is a mobile-first short-form feed that uses current classroom context 
 surface entertaining stories, explanations, and cultural context. It is designed for
 passive discovery rather than assignments, grades, quizzes, or visible mastery.
 
-The Build Week vertical slice follows a synthetic English 10 student reading *The
-Great Gatsby*, Chapters 4-5. The feed mixes original human editorial posts with
-AI-planned posts, preserves provenance, and blocks content beyond the student's
-spoiler boundary. A demo classroom control advances Canvas to Chapter 6 and visibly
-refreshes the feed.
+The Build Week vertical slice follows a synthetic student across English 10, World
+History, Biology, and Algebra II. Her current feed moves between *The Great Gatsby*,
+the Cuban Missile Crisis, cell division, and exponential growth. It mixes original
+human editorial posts with AI-planned posts, preserves course-specific provenance, and
+enforces each class's learning boundary independently. A demo classroom control
+advances Gatsby to Chapter 6 and visibly refreshes the feed without displacing the
+other classes.
 
 ## Run Locally
 
@@ -34,8 +36,9 @@ completed chapter boundary.
 ## Judge Demo
 
 1. Open the feed at a phone viewport or install it to an iPhone home screen.
-2. Scroll through the mixed human and AI-created Gatsby posts.
-3. Open `Why this?` to inspect the Canvas reason, sources, and spoiler boundary.
+2. Scroll through the mixed English, History, Biology, and Algebra II posts.
+3. Open `Why this?` on different subjects to inspect the matching Canvas reason,
+   sources, and learning boundary.
 4. Save or like a post to record a passive preference signal.
 5. Open the sliders control in the top-right.
 6. Choose `Advance class to Chapter 6` and observe the new first backstories.
@@ -81,8 +84,9 @@ npm run test:e2e
 npm run build
 ```
 
-The browser suite validates 390x844 mobile and 1440x1000 desktop viewports, full-height
-posts, horizontal overflow, provenance, paging, and the Chapter 6 LMS transition.
+The browser suite validates 320x568 and 390x844 mobile viewports plus 1440x1000 desktop,
+full-height posts, multi-course diversity, course-specific provenance, paging, and the
+Chapter 6 LMS transition.
 
 ## Production Build
 

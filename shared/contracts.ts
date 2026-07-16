@@ -20,6 +20,8 @@ export const sequenceRangeSchema = z
   })
   .refine((range) => range.start <= range.end, "Sequence start must precede its end");
 
+export const sequenceKindSchema = z.enum(["chapter", "unit", "lesson", "scene", "act"]);
+
 export const learningItemSchema = z.object({
   id: z.string(),
   courseId: z.string(),
@@ -36,7 +38,7 @@ export const learningItemSchema = z.object({
 export const spoilerBoundarySchema = z
   .object({
     scopeId: z.string(),
-    kind: z.literal("chapter"),
+    kind: sequenceKindSchema,
     completedThrough: z.number().int().nonnegative(),
     assignedThrough: z.number().int().nonnegative()
   })
@@ -45,17 +47,39 @@ export const spoilerBoundarySchema = z
     "Completed position cannot exceed assigned position"
   );
 
+export const learningFocusSchema = z.object({
+  id: z.string(),
+  courseId: z.string(),
+  topic: z.string(),
+  workTitle: z.string().nullable(),
+  concepts: z.array(z.string()),
+  learningItem: learningItemSchema,
+  sequenceBoundary: spoilerBoundarySchema
+});
+
 export const learningContextSchema = z.object({
   studentId: z.string(),
   generatedAt: z.string().datetime(),
-  course: courseSchema,
-  focus: z.object({
-    topic: z.string(),
-    workTitle: z.string(),
-    concepts: z.array(z.string()),
-    learningItem: learningItemSchema,
-    spoilerBoundary: spoilerBoundarySchema
-  })
+  courses: z.array(courseSchema).min(1),
+  focuses: z.array(learningFocusSchema).min(1)
+}).superRefine((context, issueContext) => {
+  const courseIds = new Set(context.courses.map((course) => course.id));
+  for (const focus of context.focuses) {
+    if (!courseIds.has(focus.courseId)) {
+      issueContext.addIssue({
+        code: "custom",
+        path: ["focuses", focus.id, "courseId"],
+        message: "Learning focus must reference an active course"
+      });
+    }
+  }
+});
+
+export const postSequenceSchema = z.object({
+  scopeId: z.string(),
+  kind: sequenceKindSchema,
+  requiredThrough: z.number().int().nonnegative(),
+  revealsThrough: z.number().int().nonnegative().nullable()
 });
 
 export const sourceRefSchema = z.object({
@@ -78,6 +102,10 @@ export const postFormatSchema = z.enum([
 
 export const feedPostSchema = z.object({
   id: z.string(),
+  courseId: z.string(),
+  learningItemId: z.string(),
+  contextLabel: z.string(),
+  sequence: postSequenceSchema,
   origin: z.enum(["human", "ai", "hybrid"]),
   creator: z.object({
     name: z.string(),
@@ -112,12 +140,10 @@ export const feedPostSchema = z.object({
       .optional()
   }),
   conceptTags: z.array(z.string()),
-  minChapter: z.number().int().positive(),
-  revealsThrough: z.number().int().nonnegative(),
   why: z.object({
     reason: z.string(),
     sourceLabel: z.string(),
-    spoilerLabel: z.string()
+    safetyLabel: z.string()
   }),
   sources: z.array(sourceRefSchema).min(1),
   publishedAt: z.string().datetime()
@@ -179,6 +205,7 @@ export const contentPlanSchema = z.object({
 
 export type Course = z.infer<typeof courseSchema>;
 export type LearningItem = z.infer<typeof learningItemSchema>;
+export type LearningFocus = z.infer<typeof learningFocusSchema>;
 export type LearningContext = z.infer<typeof learningContextSchema>;
 export type SourceRef = z.infer<typeof sourceRefSchema>;
 export type FeedPost = z.infer<typeof feedPostSchema>;

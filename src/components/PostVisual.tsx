@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CloudRain, MoveRight, Quote, Sparkles } from "lucide-react";
+import { Clock3, CloudRain, MoveRight, Quote, Sparkles } from "lucide-react";
 import type { FeedPost } from "../../shared/contracts";
 
 type PostVisualProps = {
@@ -38,16 +38,30 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
   }
 
   if (post.format === "split-explainer") {
+    const isBiology = post.courseId === "course-biology";
+    const isHistory = post.courseId === "course-world-history";
     return (
       <div className="split-visual" style={{ "--accent": post.visual.accent } as React.CSSProperties}>
         <div className="split-column split-first">
           <span>{post.visual.beats[0]?.split(" · ")[0]}</span>
           <strong>{post.visual.beats[0]?.split(" · ")[1]}</strong>
+          {isBiology && (
+            <div className="chromosome-stage chromosome-lined" aria-hidden="true">
+              <i /><i /><i />
+            </div>
+          )}
+          {isHistory && <Clock3 className="history-clock" aria-hidden="true" />}
         </div>
         <MoveRight className="split-arrow" aria-hidden="true" />
         <div className="split-column split-second">
           <span>{post.visual.beats[1]?.split(" · ")[0]}</span>
           <strong>{post.visual.beats[1]?.split(" · ")[1]}</strong>
+          {isBiology && (
+            <div className="chromosome-stage chromosome-separated" aria-hidden="true">
+              <i /><i /><i /><i />
+            </div>
+          )}
+          {isHistory && <Clock3 className="history-clock" aria-hidden="true" />}
         </div>
         <p>{post.visual.beats[2]}</p>
       </div>
@@ -76,6 +90,13 @@ export function PostVisual({ post, active, pollChoice, onPoll }: PostVisualProps
     return (
       <div className="poll-visual">
         {post.visual.imageUrl && <img src={post.visual.imageUrl} alt={post.visual.alt} />}
+        {post.courseId === "course-algebra-2" && (
+          <svg className="algebra-graph" viewBox="0 0 320 500" aria-hidden="true">
+            <path className="graph-axis" d="M34 440H294M34 440V72" />
+            <path className="graph-linear" d="M42 410L280 150" />
+            <path className="graph-exponential" d="M42 420C140 418 212 388 280 96" />
+          </svg>
+        )}
         <div className="poll-panel">
           <Quote aria-hidden="true" />
           <h3>{post.visual.poll.prompt}</h3>

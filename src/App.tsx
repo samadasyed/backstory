@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { BookOpen, Check, ChevronRight, CloudOff, RotateCcw, Sparkles } from "lucide-react";
+import { BookOpen, Check, ChevronRight, CloudOff, Layers3, RotateCcw, Sparkles } from "lucide-react";
 import type { FeedEvent, FeedPost, FeedResponse } from "../shared/contracts";
 import { generatePlan, getFeed, resetDemo, sendEvent, updateDemoState } from "./api";
 import { AppHeader } from "./components/AppHeader";
@@ -36,7 +36,8 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [planStatus, setPlanStatus] = useState<string | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
-  const assignedThrough = feed?.context.focus.spoilerBoundary.assignedThrough;
+  const gatsbyFocus = feed?.context.focuses.find((focus) => focus.id === "focus-gatsby-current");
+  const assignedThrough = gatsbyFocus?.sequenceBoundary.assignedThrough;
 
   const loadFeed = useCallback(async () => {
     try {
@@ -129,10 +130,10 @@ export default function App() {
     setToast("Demo reset to Chapters 4–5");
   };
 
-  const runPlanner = async () => {
+  const runPlanner = async (courseId: string) => {
     setPlanStatus("Planning…");
     try {
-      const result = await generatePlan();
+      const result = await generatePlan(courseId);
       setPlanStatus(`${result.mode === "gpt-5.6" ? "GPT-5.6" : "Demo planner"}: ${result.plan.hook}`);
     } catch {
       setPlanStatus("Planner unavailable");
@@ -159,14 +160,17 @@ export default function App() {
     );
   }
 
-  const currentChapter = feed.context.focus.spoilerBoundary.assignedThrough;
+  const currentChapter = gatsbyFocus?.sequenceBoundary.assignedThrough ?? 5;
+  const activePost = feed.items[activeIndex]?.post ?? feed.items[0]!.post;
+  const activeCourse = feed.context.courses.find((course) => course.id === activePost.courseId) ?? feed.context.courses[0]!;
+  const activeFocus = feed.context.focuses.find((focus) => focus.courseId === activeCourse.id) ?? feed.context.focuses[0]!;
   return (
     <main className="app-shell">
       <div className="desktop-context" aria-hidden="true">
         <span>NOW IN YOUR FEED</span>
-        <h1>The Great<br />Gatsby</h1>
-        <p>Identity, longing, and social status</p>
-        <div><BookOpen /> English 10 · Chapter {currentChapter}</div>
+        <h1>{activeCourse.name}</h1>
+        <p>{activeFocus.topic}</p>
+        <div><Layers3 /> {feed.context.courses.length} classes connected</div>
       </div>
 
       <section className="phone-stage" aria-label="Backstory feed">
@@ -189,16 +193,11 @@ export default function App() {
             />
           ))}
         </div>
-        <div className="feed-progress" aria-hidden="true">
-          {feed.items.map((item, index) => (
-            <span className={index === activeIndex ? "active" : ""} key={item.post.id} />
-          ))}
-        </div>
       </section>
 
       <div className="desktop-note" aria-hidden="true">
         <span>BACKSTORY SIGNAL</span>
-        <p>{feed.context.focus.learningItem.title}</p>
+        <p>{activeFocus.learningItem.title}</p>
         <small>Canvas synced · spoiler-safe</small>
       </div>
 
@@ -210,7 +209,7 @@ export default function App() {
               <span>{selectedPost.why.sourceLabel}</span>
               <p>{selectedPost.why.reason}</p>
             </div>
-            <div className="safety-row"><Check aria-hidden="true" /> {selectedPost.why.spoilerLabel}</div>
+            <div className="safety-row"><Check aria-hidden="true" /> {selectedPost.why.safetyLabel}</div>
             <div className="source-list">
               {selectedPost.sources.filter((source) => source.kind !== "model-output").map((source) => (
                 <div key={source.id}>
@@ -243,10 +242,21 @@ export default function App() {
       <BottomSheet title="Demo classroom" open={sheet === "demo"} onClose={() => setSheet(null)}>
         <div className="demo-content">
           <div className="demo-status">
-            <div><BookOpen aria-hidden="true" /></div>
-            <span>Canvas · English 10</span>
-            <strong>The Great Gatsby</strong>
-            <small>Reading through Chapter {currentChapter}</small>
+            <div><Layers3 aria-hidden="true" /></div>
+            <span>Mock Canvas · {feed.context.courses.length} classes synced</span>
+            <strong>Maya's current classes</strong>
+            <small>Every item below contributes to the For You feed</small>
+          </div>
+          <div className="demo-course-list">
+            {feed.context.focuses.map((focus) => {
+              const focusCourse = feed.context.courses.find((course) => course.id === focus.courseId);
+              return (
+                <div key={focus.id}>
+                  <span>{focusCourse?.name}</span>
+                  <small>{focus.learningItem.title}</small>
+                </div>
+              );
+            })}
           </div>
           {currentChapter < 6 ? (
             <button className="primary-action" type="button" onClick={() => void advanceChapter()}>
@@ -257,8 +267,8 @@ export default function App() {
               <RotateCcw aria-hidden="true" /> Reset to Chapters 4–5
             </button>
           )}
-          <button className="planner-action" type="button" onClick={() => void runPlanner()}>
-            <Sparkles aria-hidden="true" /> Run grounded content planner
+          <button className="planner-action" type="button" onClick={() => void runPlanner(activeCourse.id)}>
+            <Sparkles aria-hidden="true" /> Plan from {activeCourse.name}
           </button>
           {planStatus && <p className="planner-status">{planStatus}</p>}
           <p className="demo-footnote">Synthetic demo data · no student records</p>

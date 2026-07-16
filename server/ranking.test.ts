@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { feedPostSchema, learningContextSchema, type FeedEvent } from "../shared/contracts";
 import { createLearningContext, feedPosts } from "./data";
-import { applyEvent, createRankingState, isSpoilerSafe, rankPosts } from "./ranking";
+import { applyEvent, createRankingState, isPostEligible, rankPosts } from "./ranking";
 
 describe("Backstory domain fixtures", () => {
   it("conforms to the shared contracts", () => {
@@ -11,21 +11,33 @@ describe("Backstory domain fixtures", () => {
 });
 
 describe("spoiler safety", () => {
-  const chapterFivePost = feedPosts.find((post) => post.minChapter === 5)!;
-  const chapterSixPost = feedPosts.find((post) => post.minChapter === 6)!;
+  const chapterFivePost = feedPosts.find(
+    (post) => post.sequence.scopeId === "work-great-gatsby" && post.sequence.requiredThrough === 5
+  )!;
+  const chapterSixPost = feedPosts.find(
+    (post) => post.sequence.scopeId === "work-great-gatsby" && post.sequence.requiredThrough === 6
+  )!;
 
   it("allows only posts inside both assigned and completed boundaries", () => {
-    expect(isSpoilerSafe(chapterFivePost, { completedThrough: 4, assignedThrough: 5 })).toBe(false);
-    expect(isSpoilerSafe(chapterFivePost, { completedThrough: 5, assignedThrough: 5 })).toBe(true);
-    expect(isSpoilerSafe(chapterSixPost, { completedThrough: 5, assignedThrough: 5 })).toBe(false);
-    expect(isSpoilerSafe(chapterSixPost, { completedThrough: 6, assignedThrough: 6 })).toBe(true);
+    expect(isPostEligible(chapterFivePost, createLearningContext({ completedThrough: 4, assignedThrough: 5 }))).toBe(false);
+    expect(isPostEligible(chapterFivePost, createLearningContext({ completedThrough: 5, assignedThrough: 5 }))).toBe(true);
+    expect(isPostEligible(chapterSixPost, createLearningContext({ completedThrough: 5, assignedThrough: 5 }))).toBe(false);
+    expect(isPostEligible(chapterSixPost, createLearningContext({ completedThrough: 6, assignedThrough: 6 }))).toBe(true);
   });
 
   it("cannot be overridden by ranking preferences", () => {
     const rankingState = createRankingState();
-    rankingState.preferences.set("identity", 1);
-    const ranked = rankPosts(feedPosts, { completedThrough: 5, assignedThrough: 5 }, rankingState);
-    expect(ranked.some((item) => item.post.minChapter === 6)).toBe(false);
+    rankingState.preferences.set("course-english-10:identity", 1);
+    const ranked = rankPosts(feedPosts, createLearningContext({ completedThrough: 5, assignedThrough: 5 }), rankingState);
+    expect(ranked.some((item) => item.post.sequence.scopeId === "work-great-gatsby" && item.post.sequence.requiredThrough === 6)).toBe(false);
+  });
+
+  it("fails closed when a post points at the wrong course sequence", () => {
+    const mismatchedPost = {
+      ...chapterFivePost,
+      sequence: { ...chapterFivePost.sequence, scopeId: "unit-cell-division" }
+    };
+    expect(isPostEligible(mismatchedPost, createLearningContext({ completedThrough: 5, assignedThrough: 5 }))).toBe(false);
   });
 });
 
@@ -44,13 +56,19 @@ describe("passive ranking", () => {
     expect(applyEvent(event, feedPosts, rankingState)).toBe(true);
     expect(applyEvent(event, feedPosts, rankingState)).toBe(false);
     expect(rankingState.savedPostIds.has(post.id)).toBe(true);
-    expect(rankingState.preferences.get(post.conceptTags[0]!)).toBe(0.35);
+    expect(rankingState.preferences.get(`${post.courseId}:${post.conceptTags[0]!}`)).toBe(0.35);
   });
 
-  it("keeps human and AI origins mixed in the opening feed", () => {
-    const ranked = rankPosts(feedPosts, { completedThrough: 5, assignedThrough: 5 }, createRankingState());
+  it("keeps courses and origins mixed in the opening feed", () => {
+    const ranked = rankPosts(
+      feedPosts,
+      createLearningContext({ completedThrough: 5, assignedThrough: 5 }),
+      createRankingState()
+    );
     const origins = new Set(ranked.slice(0, 5).map((item) => item.post.origin));
+    const courseIds = new Set(ranked.slice(0, 6).map((item) => item.post.courseId));
     expect(origins.has("human")).toBe(true);
     expect(origins.has("ai")).toBe(true);
+    expect(courseIds.size).toBe(4);
   });
 });

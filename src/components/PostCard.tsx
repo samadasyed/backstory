@@ -53,8 +53,9 @@ export function PostCard({
   const post = item.post;
   return (
     <article
-      className={`feed-post tone-${post.visual.tone} ${active ? "is-active" : ""}`}
+      className={`feed-post tone-${post.visual.tone} course-${post.courseId} ${active ? "is-active" : ""}`}
       data-post-id={post.id}
+      data-course-id={post.courseId}
       style={{ "--accent": post.visual.accent } as React.CSSProperties}
       aria-label={post.headline}
     >
@@ -99,12 +100,12 @@ export function PostCard({
               <Bot aria-hidden="true" /> AI-made
             </span>
           )}
-          {post.origin === "human" && <span className="origin-label">Original</span>}
+          {post.origin === "human" && <span className="origin-label">Creator-made</span>}
         </div>
         <h2>{post.headline}</h2>
         <p>{post.caption}</p>
         <div className="post-context">
-          <span>English · Gatsby Ch. {post.minChapter}</span>
+          <span>{post.contextLabel}</span>
           <button type="button" onClick={onWhy}>Why this?</button>
         </div>
       </div>

@@ -132,6 +132,14 @@ content in the product.
 
 - This repository started during the July 2026 OpenAI Build Week submission period.
 - Keep commits and documentation clear enough to show what Codex contributed.
+- Codex may create local commits without a separate prompt at clear stopping points or
+  when a checkpoint will improve continuity across agent sessions.
+- Before every commit, inspect the exact staged files and run a sensitive-data scan.
+  Never commit API keys, tokens, private keys, populated environment files, personal
+  data, or other credentials. If anything sensitive is found, remove or replace it,
+  update `.gitignore` when appropriate, restage, and repeat the check before committing.
+- Do not push commits. The user handles pushes unless they explicitly request a push in
+  the current conversation.
 - Document meaningful product and engineering decisions as work proceeds.
 - Prefer focused vertical slices that can be demonstrated over broad integrations.
 - Run `npm run typecheck`, `npm run lint`, `npm test`, `npm run test:e2e`, and
